@@ -1,5 +1,5 @@
 @using System.Security.Claims
-
+@model IEnumerable<SmartStudent.Models.Transaction>
 
 <!DOCTYPE html>
 <html lang="en">
@@ -110,36 +110,25 @@
                                     <tr>
                                         <th>Date</th>
                                         <th>Type</th>
-                                        <th>Title</th>
                                         <th>Category</th>
                                         <th>Amount</th>
                                         <th>Actions</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr>
-                                        <td>2025-12-01</td>
-                                        <td>Income</td>
-                                        <td>Part-time Job</td>
-                                        <td>Salary</td>
-                                        <td>$500</td>
-                                        <td>
-                                            <button class="btn btn-sm btn-warning me-1">Edit</button>
-                                            <button class="btn btn-sm btn-danger">Delete</button>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>2025-12-05</td>
-                                        <td>Expense</td>
-                                        <td>Books</td>
-                                        <td>Education</td>
-                                        <td>$120</td>
-                                        <td>
-                                            <button class="btn btn-sm btn-warning me-1">Edit</button>
-                                            <button class="btn btn-sm btn-danger">Delete</button>
-                                        </td>
-                                    </tr>
-                                </tbody>
+@foreach (var transaction in Model)
+{
+    <tr>
+        <td>@transaction.Date.ToString("dd/MM/yyyy")</td>
+        <td>@transaction.Type</td>
+        <td>@transaction.Category</td>
+        <td>@transaction.Amount.ToString("C")</td>
+        <td>
+            <a class="btn btn-sm btn-primary" href="/Finance/Transactions">View</a>
+        </td>
+    </tr>
+}
+</tbody>
                             </table>
                         </div>
                     </div>
@@ -170,22 +159,28 @@
 
 <script>
 document.addEventListener("DOMContentLoaded", function () {
-    // Initialize the datatable
     const dataTable = new simpleDatatables.DataTable("#datatablesSimple");
 
-    // Loop through table rows and color + bold the Type column text
-    document.querySelectorAll("#datatablesSimple tbody tr").forEach(row => {
-        const typeCell = row.querySelector("td:nth-child(2)"); // 2nd column = Type
-        if (typeCell) {
+    function applyTypeColors() {
+        document.querySelectorAll("#datatablesSimple tbody tr").forEach(row => {
+            const typeCell = row.querySelector("td:nth-child(2)");
+            if (!typeCell) return;
+
             const type = typeCell.textContent.trim();
+            typeCell.style.fontWeight = "bold";
+
             if (type === "Income") {
                 typeCell.style.color = "green";
-                typeCell.style.fontWeight = "bold";
             } else if (type === "Expense") {
                 typeCell.style.color = "red";
-                typeCell.style.fontWeight = "bold";
+            } else {
+                typeCell.style.color = "";
             }
-        }
-    });
+        });
+    }
+
+    applyTypeColors();
+
+    dataTable.on("datatable.update", applyTypeColors);
 });
 </script>

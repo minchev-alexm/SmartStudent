@@ -1,23 +1,26 @@
-using System.Diagnostics;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using SmartStudent.Data;
 using SmartStudent.Models;
+using System.Diagnostics;
 
 namespace SmartStudent.Controllers
 {
     [Authorize]
     public class DashboardController : Controller
     {
-        private readonly ILogger<DashboardController> _logger;
+        private readonly ApplicationDbContext db;
 
-        public DashboardController(ILogger<DashboardController> logger)
+        public DashboardController(ApplicationDbContext db)
         {
-            _logger = logger;
+            this.db = db;
         }
 
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
-            return View();
+            var transactions = await db.Transactions.ToListAsync();
+            return View(transactions);
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]

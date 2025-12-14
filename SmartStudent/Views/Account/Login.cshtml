@@ -54,6 +54,7 @@
         .text-center p {
             margin-bottom: 0.25rem;
         }
+
     </style>
 </head>
 <body>
@@ -61,21 +62,25 @@
         <h2>SmartStudent</h2>
         <h3><b>Login</b></h3>
 <form asp-action="Login" asp-controller="Account" method="post">
-        @Html.AntiForgeryToken()
-        <div class="mb-3">
-            <label asp-for="Email" class="form-label"></label>
-            <input asp-for="Email" class="form-control"/>
-            <span asp-validation-for="Email" class="text-danger"></span>
-        </div>
+    @Html.AntiForgeryToken()
 
-        <div class="mb-3">
-            <label asp-for="Password" class="form-label"></label>
-            <input asp-for="Password" class="form-control" />
-            <span asp-validation-for="Password" class="text-danger"></span>
-        </div>
+    <div asp-validation-summary="All" class="text-danger mb-3"></div>
 
-        <button type="submit" class="btn btn-primary w-100">Login</button>
-    </form>
+    <div class="mb-3">
+        <label asp-for="Email" class="form-label"></label>
+        <input asp-for="Email" class="form-control"/>
+        <span asp-validation-for="Email" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Password" class="form-label"></label>
+        <input asp-for="Password" class="form-control" />
+        <span asp-validation-for="Password" class="text-danger"></span>
+    </div>
+
+    <button type="submit" class="btn btn-primary w-100">Login</button>
+</form>
+
         <div class="text-center">
             <p>Don't have an account? <a href="Register">Register</a></p>
             <p><a href="ResetPassword">Forgot Password?</a></p>

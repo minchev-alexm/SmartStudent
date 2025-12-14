@@ -90,8 +90,13 @@
                                 <div class="card-header">Account Settings</div>
                                 <div class="card-body">
                                     <div class="mb-2">
+                                        <label class="form-label">Name</label>
+                                        <input type="text" class="form-control" value="@User.FindFirstValue(ClaimTypes.Name)">
+                                    </div>
+
+                                     <div class="mb-2">
                                         <label class="form-label">Email</label>
-                                        <input type="text" class="form-control" value="user@example.com">
+                                        <input type="text" class="form-control" value="@User.FindFirstValue(ClaimTypes.Email)">
                                     </div>
                                     
                                     <button class="btn btn-primary mt-2">Update Account</button>

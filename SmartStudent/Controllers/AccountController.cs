@@ -63,7 +63,8 @@ namespace SmartStudent.Controllers
             //Create claims
             List<Claim> claims = new List<Claim>();
 
-            claims.Add(new Claim(ClaimTypes.Name, user.Email));
+            claims.Add(new Claim(ClaimTypes.Name, user.Name));
+            claims.Add(new Claim(ClaimTypes.Email, user.Email));
             claims.Add(new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()));
 
             ClaimsIdentity identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
