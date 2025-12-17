@@ -173,7 +173,7 @@
         <td>@transaction.Category</td>
         <td>@transaction.Amount.ToString("C")</td>
         <td>
-            <a class="btn btn-sm btn-primary" href="/Finance/Transactions">View</a>
+            <a class="btn btn-sm btn-primary" asp-controller="Finance" asp-action="ViewTransaction" asp-route-id="@transaction.Id">View</a>
         </td>
     </tr>
 }

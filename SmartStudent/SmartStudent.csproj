@@ -7,10 +7,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="wwwroot\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <None Include="Views\Finance\Budget.cshtml" />
     <None Include="Views\Config\Categories.cshtml" />
     <None Include="Views\charts.cshtml" />

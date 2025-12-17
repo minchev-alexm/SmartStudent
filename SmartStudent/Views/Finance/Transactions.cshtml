@@ -99,7 +99,7 @@
                         <div class="card-header d-flex align-items-center">
                             <i class="fas fa-table me-2"></i>
                             Recent Transactions
-                          <a href="add-transaction.html" class="btn btn-primary ms-auto" style="font-size: 0.93rem; padding: 0.35rem 0.65rem;">
+                          <a href="/Finance/CreateTransaction" class="btn btn-primary ms-auto" style="font-size: 0.93rem; padding: 0.35rem 0.65rem;">
     Add Transaction
 </a>
 
@@ -124,7 +124,7 @@
         <td>@transaction.Category</td>
         <td>@transaction.Amount.ToString("C")</td>
         <td>
-            <a class="btn btn-sm btn-primary" href="/Finance/Transactions">View</a>
+            <a class="btn btn-sm btn-primary" asp-controller="Finance" asp-action="ViewTransaction" asp-route-id="@transaction.Id">View</a>
         </td>
     </tr>
 }
