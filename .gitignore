@@ -42,7 +42,7 @@ bld/
 Generated\ Files/
 
 # Uploaded documents
-/wwwroot/documents/*
+**/wwwroot/documents/*
 
 
 # MSTest test Results
