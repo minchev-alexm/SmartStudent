@@ -14,14 +14,14 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Include="Views\Finance\Budget.cshtml" />
+    <None Include="Views\Budget\Index.cshtml" />
     <None Include="Views\Config\Categories.cshtml" />
     <None Include="Views\charts.cshtml" />
     <None Include="Views\Dashboard\Index.cshtml" />
     <None Include="Views\Account\Login.cshtml" />
     <None Include="Views\Account\Register.cshtml" />
     <None Include="Views\Config\Settings.cshtml" />
-    <None Include="Views\Finance\Transactions.cshtml" />
+    <None Include="Views\Transaction\Index.cshtml" />
   </ItemGroup>
 
   <ItemGroup>
@@ -32,6 +32,10 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="wwwroot\css\" />
   </ItemGroup>
 
 </Project>

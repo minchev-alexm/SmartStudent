@@ -54,12 +54,12 @@
                             Dashboard
                         </a>
 
-                        <div class="sb-sidenav-menu-heading">Finance</div>
-                        <a class="nav-link active" href="/Finance/Transactions">
+                        <div class="sb-sidenav-menu-heading">Transaction</div>
+                        <a class="nav-link active" href="/Transaction/Index">
                             <div class="sb-nav-link-icon"><i class="fas fa-exchange-alt"></i></div>
                             Transactions
                         </a>
-                        <a class="nav-link" href="/Finance/Budget">
+                        <a class="nav-link" href="/Budget/Index">
                             <div class="sb-nav-link-icon"><i class="fas fa-wallet"></i></div>
                             Budget
                         </a>
@@ -84,7 +84,7 @@
                 <div class="container-fluid px-4">
     <div class="d-flex justify-content-between align-items-center mt-4 mb-3">
         <h1 class="fs-2 mb-0">Transaction Details</h1>
-        <a href="/Finance/Transactions"
+        <a href="/Transaction/Index"
            class="btn btn-secondary btn">
             Back to Transactions
         </a>
@@ -99,7 +99,7 @@
             </div>
 
             <div class="ms-auto d-flex gap-2">
-                <a asp-controller="Finance"
+                <a asp-controller="Transaction"
                    asp-action="EditTransaction"
                    asp-route-id="@Model.Id"
                    class="btn btn-primary btn-sm"
@@ -107,7 +107,7 @@
                     Edit
                 </a>
 
-                <form asp-controller="Finance"
+                <form asp-controller="Transaction"
                       asp-action="DeleteTransaction"
                       asp-route-id="@Model.Id"
                       method="post"

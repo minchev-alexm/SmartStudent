@@ -5,21 +5,16 @@ using SmartStudent.Models;
 
 namespace SmartStudent.Controllers
 {
-    public class FinanceController : Controller
+    public class TransactionController : Controller
     {
         private readonly ApplicationDbContext db;
 
-        public FinanceController(ApplicationDbContext db)
+        public TransactionController(ApplicationDbContext db)
         {
             this.db = db;
         }
 
-        public IActionResult Budget()
-        {
-            return View();
-        }
-
-        public async Task<IActionResult> Transactions()
+        public async Task<IActionResult> Index()
         {
             var transactions = await db.Transactions.ToListAsync();
             return View(transactions);
@@ -69,7 +64,7 @@ namespace SmartStudent.Controllers
             db.Transactions.Add(model);
             await db.SaveChangesAsync();
 
-            return RedirectToAction(nameof(Transactions));
+            return RedirectToAction(nameof(Index));
         }
 
         [HttpPost]
@@ -94,7 +89,7 @@ namespace SmartStudent.Controllers
             db.Transactions.Remove(transaction);
             await db.SaveChangesAsync();
 
-            return RedirectToAction(nameof(Transactions));
+            return RedirectToAction(nameof(Index));
         }
 
 
@@ -156,7 +151,7 @@ namespace SmartStudent.Controllers
             }
 
             await db.SaveChangesAsync();
-            return RedirectToAction(nameof(Transactions));
+            return RedirectToAction(nameof(Index));
         }
 
 
