@@ -121,13 +121,11 @@ namespace SmartStudent.Controllers
             if (transaction == null)
                 return NotFound();
 
-            // Update scalar fields
             transaction.Date = model.Date;
             transaction.Type = model.Type;
             transaction.Category = model.Category;
             transaction.Amount = model.Amount;
 
-            // Handle document upload (overwrite only if new file exists)
             if (model.DocumentFile != null && model.DocumentFile.Length > 0)
             {
                 var uploadsFolder = Path.Combine(
@@ -137,7 +135,6 @@ namespace SmartStudent.Controllers
 
                 Directory.CreateDirectory(uploadsFolder);
 
-                // Delete old file if it exists
                 if (!string.IsNullOrEmpty(transaction.DocumentPath))
                 {
                     var oldFilePath = Path.Combine(
@@ -149,7 +146,6 @@ namespace SmartStudent.Controllers
                         System.IO.File.Delete(oldFilePath);
                 }
 
-                // Save new file
                 var fileName = $"{Guid.NewGuid()}{Path.GetExtension(model.DocumentFile.FileName)}";
                 var filePath = Path.Combine(uploadsFolder, fileName);
 
@@ -158,7 +154,6 @@ namespace SmartStudent.Controllers
 
                 transaction.DocumentPath = $"/documents/{fileName}";
             }
-            // else: no file uploaded → keep existing DocumentPath exactly as-is
 
             await db.SaveChangesAsync();
             return RedirectToAction(nameof(Transactions));

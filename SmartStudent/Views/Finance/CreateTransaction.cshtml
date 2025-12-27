@@ -140,13 +140,14 @@
                                     </div>
                                 </div>
 
-                                <div class="mb-3 row">
-                                    <label class="col-sm-3 col-form-label">Document</label>
-                                    <div class="col-sm-9">
-                                        <input asp-for="DocumentPath" class="form-control" type="file" />
-                                        <span asp-validation-for="DocumentPath" class="text-danger"></span>
-                                    </div>
-                                </div>
+                              <div class="mb-3 row">
+    <label class="col-sm-3 col-form-label">Document</label>
+    <div class="col-sm-9">
+        <input asp-for="DocumentFile" class="form-control" type="file" />
+        <span asp-validation-for="DocumentFile" class="text-danger"></span>
+    </div>
+</div>
+
 
                                 <div class="text-end">
                                     <button type="submit" style="font-size: 0.93rem; padding: 0.35rem 0.65rem;" class="btn btn-primary btn-sm">Add Transaction</button>
@@ -178,10 +179,13 @@
 
 <script>
     document.addEventListener("DOMContentLoaded", function () {
-        flatpickr("#transactionDate", {
-            dateFormat: "d/m/Y",
-            defaultDate: "today",
-            allowInput: true
-        });
+      flatpickr("#transactionDate", {
+    dateFormat: "Y-m-d",
+    altInput: true,
+    altFormat: "d/m/Y",
+    defaultDate: "today",
+    allowInput: true
+});
+
     });
 </script>
