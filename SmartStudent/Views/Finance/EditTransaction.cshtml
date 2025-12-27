@@ -118,7 +118,7 @@
     <div class="mb-3 row">
         <label class="col-sm-3 col-form-label">Date</label>
         <div class="col-sm-9">
-            <input asp-for="Date" class="form-control" type="date" />
+            <input asp-for="Date" class="form-control" id="transactionDate" />
             <span asp-validation-for="Date" class="text-danger"></span>
         </div>
     </div>
@@ -192,10 +192,13 @@
 
 <script>
     document.addEventListener("DOMContentLoaded", function () {
-        flatpickr("#transactionDate", {
-            dateFormat: "d/m/Y",
-            defaultDate: "@Model.Date.ToString("dd/MM/yyyy")",
-            allowInput: true
-        });
+     flatpickr("#transactionDate", {
+    dateFormat: "Y-m-d",
+    altInput: true,
+    altFormat: "d/m/Y",
+    defaultDate: "today",
+    allowInput: true
+});
+
     });
 </script>
