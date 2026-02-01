@@ -5,6 +5,7 @@
 <!DOCTYPE html>
 <html lang="en">
 
+
 <head>
     <meta charset="utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
@@ -92,53 +93,49 @@
             </nav>
         </div>
         <div id="layoutSidenav_content">
-            <main>
-                <div class="container-fluid px-4">
-                    <div class="d-flex align-items-center justify-content-between mb-3">
-                        <h1 class="mt-4 mb-0 fs-2">Dashboard</h1>
+   <main>
+    <div class="container-fluid px-4">
 
+        <!-- Dashboard header -->
+        <div class="d-flex align-items-center justify-content-between mb-3">
+            <h1 class="mt-4 mb-0 fs-2">Dashboard</h1>
+            <div class="text-muted" style="font-size: 1.3rem;">
+                <i class="fas fa-calendar-alt me-2"></i>December 2025
+            </div>
+        </div>
 
-                        <div class="text-muted" style="font-size: 1.3rem;">
-                            <i class="fas fa-calendar-alt me-2"></i>
-                            December 2025
-                        </div>
-                    </div>
-
-
-
-                    <div class="row">
-                        <div class="col-xl-3 col-md-6">
-                            <div class="card bg-primary text-white mb-4">
-                                <div class="card-body">Balance: $1000</div>
-                                <div class="card-footer d-flex align-items-center justify-content-between">
-                                    <a class="small text-white stretched-link" href="/Budget/Index">View Details</a>
-                                    <div class="small text-white"><i class="fas fa-angle-right"></i></div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-xl-3 col-md-6">
-                            <div class="card bg-success text-white mb-4">
-                                <div class="card-body">Income: $1500</div>
-                                <div class="card-footer d-flex align-items-center justify-content-between">
-                                    <a class="small text-white stretched-link" href="/Transaction/Index">View Details</a>
-                                    <div class="small text-white"><i class="fas fa-angle-right"></i></div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-xl-3 col-md-6">
-                            <div class="card bg-warning text-dark mb-4">
-                                <div class="card-body">Expenses: $500</div>
-                               <div class="card-footer d-flex align-items-center justify-content-between">
-    <a class="small text-dark stretched-link" href="/Transaction/Index">View Details</a>
-    <div class="small"><i class="fas fa-angle-right" style="color: black;"></i></div>
+      <!-- Warning messages as a row of wider alerts -->
+@if (ViewBag.Warnings != null && ((List<string>)ViewBag.Warnings).Count > 0)
+{
+    <div class="row mb-3">
+        @foreach (var warning in (List<string>)ViewBag.Warnings)
+        {
+            <div class="col-12">
+              <div class="alert alert-danger alert-dismissible" role="alert">
+    @Html.Raw(warning)
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
 </div>
 
-                            </div>
-                        </div>
+            </div>
+        }
+    </div>
+}
 
-                       <div class="col-xl-3 col-md-6">
-    <div class="card mb-4 text-white" style="background-color: #6c757d;">
-        <div class="card-body">Budget: $500</div>
+
+        <!-- Dashboard cards -->
+        <div class="row">
+          @{
+    var balance = (decimal)ViewBag.Balance;
+    var balanceClass = balance < 0 ? "bg-danger text-white" : "bg-primary text-white";
+}
+<div class="col-xl-3 col-md-6">
+    <div class="card @balanceClass mb-4">
+      <div class="card-body">
+    Balance: @Html.Raw(balance < 0 
+        ? $"<b>-</b>${Math.Abs(balance).ToString("N2")}" 
+        : $"${balance.ToString("N2")}")
+</div>
+
         <div class="card-footer d-flex align-items-center justify-content-between">
             <a class="small text-white stretched-link" href="/Budget/Index">View Details</a>
             <div class="small text-white"><i class="fas fa-angle-right"></i></div>
@@ -146,44 +143,76 @@
     </div>
 </div>
 
-                    </div>
 
-                    <div class="card mb-4">
-                        <div class="card-header">
-                            <i class="fas fa-table me-1"></i>
-                            Recent Transactions
-                        </div>
-                        <div class="card-body">
-                            <table id="datatablesSimple">
-                                <thead>
-                                    <tr>
-                                        <th>Data</th>
-                                        <th>Type</th>
-                                        <th>Category</th>
-                                        <th>Amount</th>
-                                        <th>Actions</th>
-                                    </tr>
-                                </thead>
-<tbody>
-@foreach (var transaction in Model)
-{
-    <tr>
-        <td>@transaction.Date.ToString("dd/MM/yyyy")</td>
-        <td>@transaction.Type</td>
-        <td>@transaction.Category</td>
-        <td>@transaction.Amount.ToString("C")</td>
-        <td>
-            <a class="btn btn-sm btn-primary" asp-controller="Transaction" asp-action="ViewTransaction" asp-route-id="@transaction.Id">View</a>
-        </td>
-    </tr>
-}
-</tbody>
-
-                            </table>
-                        </div>
+            <div class="col-xl-3 col-md-6">
+                <div class="card bg-success text-white mb-4">
+                    <div class="card-body">Income: @ViewBag.IncomeTotal.ToString("C")</div>
+                    <div class="card-footer d-flex align-items-center justify-content-between">
+                        <a class="small text-white stretched-link" href="/Transaction/Index">View Details</a>
+                        <div class="small text-white"><i class="fas fa-angle-right"></i></div>
                     </div>
                 </div>
-            </main>
+            </div>
+
+            <div class="col-xl-3 col-md-6">
+                <div class="card bg-warning text-dark mb-4">
+                    <div class="card-body">Expenses: @ViewBag.ExpenseTotal.ToString("C")</div>
+                    <div class="card-footer d-flex align-items-center justify-content-between">
+                        <a class="small text-dark stretched-link" href="/Transaction/Index">View Details</a>
+                        <div class="small"><i class="fas fa-angle-right" style="color: black;"></i></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-xl-3 col-md-6">
+                <div class="card mb-4 text-white" style="background-color: #6c757d;">
+                    <div class="card-body">Budget: $500</div>
+                    <div class="card-footer d-flex align-items-center justify-content-between">
+                        <a class="small text-white stretched-link" href="/Budget/Index">View Details</a>
+                        <div class="small text-white"><i class="fas fa-angle-right"></i></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Transactions table -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <i class="fas fa-table me-1"></i>
+                Recent Transactions
+            </div>
+            <div class="card-body">
+                <table id="datatablesSimple">
+                    <thead>
+                        <tr>
+                            <th>Data</th>
+                            <th>Type</th>
+                            <th>Category</th>
+                            <th>Amount</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var transaction in Model)
+                        {
+                            <tr>
+                                <td>@transaction.Date.ToString("dd/MM/yyyy")</td>
+                                <td>@transaction.Type</td>
+                                <td>@transaction.Category</td>
+                                <td>@transaction.Amount.ToString("C")</td>
+                                <td>
+                                    <a class="btn btn-sm btn-primary" asp-controller="Transaction" asp-action="ViewTransaction" asp-route-id="@transaction.Id">View</a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
+</main>
+
               <footer class="py-4 bg-light mt-auto">
                 <div class="container-fluid px-4">
                     <div class="d-flex align-items-center justify-content-between small text-muted">

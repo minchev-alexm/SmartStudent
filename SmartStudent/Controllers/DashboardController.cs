@@ -1,4 +1,4 @@
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using SmartStudent.Data;
@@ -25,8 +25,29 @@ namespace SmartStudent.Controllers
             var transactions = await db.Transactions
                 .Where(t => t.UserId == userId)
                 .OrderByDescending(t => t.Date)
-                .Take(10) //last 10 transactions
+                .Take(10)
                 .ToListAsync();
+
+            var incomeTotal = await db.Transactions
+                .Where(t => t.UserId == userId && t.Type == "Income")
+                .SumAsync(t => (decimal?)t.Amount) ?? 0;
+
+            var expenseTotal = await db.Transactions
+                .Where(t => t.UserId == userId && t.Type == "Expense")
+                .SumAsync(t => (decimal?)t.Amount) ?? 0;
+
+            var balance = incomeTotal - expenseTotal;
+
+            ViewBag.IncomeTotal = incomeTotal;
+            ViewBag.ExpenseTotal = expenseTotal;
+            ViewBag.Balance = balance;
+
+            // Warnings
+            var warnings = new List<string>();
+            if (balance <= 0)
+                warnings.Add("<b>Warning:</b> Your balance is zero or negative!");
+
+            ViewBag.Warnings = warnings;
 
             return View(transactions);
         }
