@@ -6,7 +6,7 @@ namespace SmartStudent.Models
     {
         public int Id { get; set; }
 
-        [Required, EmailAddress]
+        [Required]
         public string Email { get; set; }
 
         [Required]

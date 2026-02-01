@@ -111,6 +111,7 @@
                         <div class="card-body">
                  <form asp-action="EditTransaction" method="post" enctype="multipart/form-data">
     @Html.AntiForgeryToken()
+     <input type="hidden" asp-for="UserId" value="@User.FindFirstValue(ClaimTypes.NameIdentifier)" />
     <input type="hidden" asp-for="Id" />
 
     <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
@@ -131,12 +132,16 @@
         </div>
     </div>
 
-    <div class="mb-3 row">
-        <label class="col-sm-3 col-form-label">Category</label>
-        <div class="col-sm-9">
-            <input asp-for="Category" class="form-control" />
-        </div>
+  <div class="mb-3 row">
+    <label class="col-sm-3 col-form-label">Category</label>
+    <div class="col-sm-9">
+        <select asp-for="Category" class="form-select" asp-items="ViewBag.CategoryList">
+            <option value="">Select Category</option>
+        </select>
+        <span asp-validation-for="Category" class="text-danger"></span>
     </div>
+</div>
+
 
     <div class="mb-3 row">
         <label class="col-sm-3 col-form-label">Amount</label>

@@ -9,6 +9,8 @@ namespace SmartStudent.Models
     {
         public int Id { get; set; }
 
+        public string UserId { get; set; }
+
         [Required]
         [DataType(DataType.Date)]
         public DateTime Date { get; set; }
