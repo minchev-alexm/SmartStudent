@@ -1,5 +1,5 @@
 @using System.Security.Claims
-
+@model IEnumerable<SmartStudent.Models.Budget>
 
 <!DOCTYPE html>
 <html lang="en">
@@ -96,65 +96,67 @@
                     </div>
 
                     <!-- Summary Cards -->
-                    <div class="row">
-                        <div class="col-xl-3 col-md-6">
-                            <div class="card bg-primary text-white mb-4">
-                                <div class="card-body">Budget: $1000</div>
-                               
-                            </div>
-                        </div>
-                        <div class="col-xl-3 col-md-6">
-                            <div class="card bg-success text-white mb-4">
-                                <div class="card-body">Remaining: $650</div>
-                              
-                            </div>
-                        </div>
-                        <div class="col-xl-3 col-md-6">
-                            <div class="card bg-warning text-dark mb-4">
-                                <div class="card-body">Spent: $350</div>
-                              
-                            </div>
-                        </div>
-                        <div class="col-xl-3 col-md-6">
-                            <div class="card bg-danger text-white mb-4">
-                                <div class="card-body">Overspent: $0</div>
-                               
-                            </div>
-                        </div>
-                    </div>
+                   <div class="row">
+    <div class="col-xl-3 col-md-6">
+        <div class="card bg-primary text-white mb-4">
+            <div class="card-body">Budget: @ViewBag.TotalPlanned.ToString("C")</div>
+        </div>
+    </div>
+    <div class="col-xl-3 col-md-6">
+        <div class="card bg-success text-white mb-4">
+            <div class="card-body">Remaining: @ViewBag.Remaining.ToString("C")</div>
+        </div>
+    </div>
+    <div class="col-xl-3 col-md-6">
+        <div class="card bg-warning text-dark mb-4">
+            <div class="card-body">Spent: @ViewBag.TotalActual.ToString("C")</div>
+        </div>
+    </div>
+    <div class="col-xl-3 col-md-6">
+        <div class="card bg-danger text-white mb-4">
+            <div class="card-body">Overspent: @ViewBag.Overspent.ToString("C")</div>
+        </div>
+    </div>
+</div>
 
                     <!-- Budget Table -->
                     <div class="card mb-4">
                         <div class="card-header d-flex align-items-center">
                             <i class="fas fa-table me-2"></i>
                             Budget Categories
-                            <a href="add-budget.html" class="btn btn-primary ms-auto" style="font-size: 0.93rem; padding: 0.35rem 0.65rem;">
+                            <a href="/Budget/Add" class="btn btn-primary ms-auto" style="font-size: 0.93rem; padding: 0.35rem 0.65rem;">
                                 Add Budget
                             </a>
                         </div>
                         <div class="card-body">
-                            <table id="datatablesSimple" class="table table-striped table-hover">
-                                <thead>
-                                    <tr>
-                                        <th>Category</th>
-                                        <th>Planned Budget</th>
-                                        <th>Actual Spending</th>
-                                        <th>Difference</th>
-                                        <th>Actions</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr style="color:green; font-weight:bold;"> <!-- Under budget -->
-                                        <td>Education</td>
-                                        <td>$200</td>
-                                        <td>$150</td>
-                                        <td>$50</td>
-                                        <td>
-                                            <button class="btn btn-sm btn-primary me-1" >View</button>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
+                        <table id="datatablesSimple" class="table table-striped table-hover">
+    <thead>
+        <tr>
+            <th>Category</th>
+            <th>Planned Budget</th>
+            <th>Actual Spending</th>
+            <th>Difference</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var budget in Model)
+        {
+            var difference = budget.Planned - budget.Actual;
+            var colorClass = difference >= 0 ? "text-success fw-bold" : "text-danger fw-bold";
+
+            <tr class="@colorClass">
+                <td>@budget.Category</td>
+                <td>@budget.Planned.ToString("C")</td>
+                <td>@budget.Actual.ToString("C")</td>
+                <td>@difference.ToString("C")</td>
+                <td>
+                    <a asp-controller="Budget" asp-action="Edit" asp-route-id="@budget.Id" class="btn btn-sm btn-primary">Edit</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
                         </div>
                     </div>
 
