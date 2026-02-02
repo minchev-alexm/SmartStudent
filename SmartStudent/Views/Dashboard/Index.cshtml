@@ -97,12 +97,35 @@
     <div class="container-fluid px-4">
 
         <!-- Dashboard header -->
-        <div class="d-flex align-items-center justify-content-between mb-3">
-            <h1 class="mt-4 mb-0 fs-2">Dashboard</h1>
-            <div class="text-muted" style="font-size: 1.3rem;">
-                <i class="fas fa-calendar-alt me-2"></i>December 2025
-            </div>
-        </div>
+    <div class="d-flex align-items-center justify-content-between mb-3">
+    <h1 class="mt-4 mb-0 fs-2">Dashboard</h1>
+    <div class="text-muted" style="font-size: 1.3rem;">
+        <i class="fas fa-calendar-alt me-2"></i>
+<form method="get" id="monthForm" class="d-inline">
+    <input type="hidden" name="year" id="yearInput" value="@ViewBag.SelectedYear" />
+    <select name="month" class="form-select d-inline w-auto" id="monthSelect">
+      @foreach (var m in (List<SmartStudent.Models.MonthYear>)ViewBag.AvailableMonths)
+{
+    if (m.Month == (int)ViewBag.SelectedMonth && m.Year == (int)ViewBag.SelectedYear)
+    {
+        <option value="@m.Month" data-year="@m.Year" selected>
+            @System.Globalization.CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(m.Month) @m.Year
+        </option>
+    }
+    else
+    {
+        <option value="@m.Month" data-year="@m.Year">
+            @System.Globalization.CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(m.Month) @m.Year
+        </option>
+    }
+}
+
+    </select>
+</form>
+
+    </div>
+</div>
+
 
       <!-- Warning messages as a row of wider alerts -->
 @if (ViewBag.Warnings != null && ((List<string>)ViewBag.Warnings).Count > 0)
@@ -262,3 +285,19 @@ document.addEventListener("DOMContentLoaded", function () {
     dataTable.on("datatable.update", applyTypeColors);
 });
 </script>
+
+
+ <script>
+document.addEventListener("DOMContentLoaded", function() {
+    const monthSelect = document.getElementById("monthSelect");
+    const yearInput = document.getElementById("yearInput");
+
+    monthSelect.addEventListener("change", function() {
+        const selectedOption = monthSelect.options[monthSelect.selectedIndex];
+        const year = selectedOption.getAttribute("data-year");
+        yearInput.value = year;   
+        monthSelect.form.submit();  
+    });
+});
+</script>
+
