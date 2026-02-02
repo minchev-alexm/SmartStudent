@@ -60,6 +60,11 @@ namespace SmartStudent.Controllers
                 .SumAsync(t => (decimal?)t.Amount) ?? 0;
 
             var balance = incomeTotal - expenseTotal;
+            var budgets = await db.Budgets.ToListAsync();
+            var totalPlanned = budgets.Sum(b => b.Planned);
+            var totalActual = budgets.Sum(b => b.Actual);
+            ViewBag.TotalPlannedBudget = totalPlanned;
+            ViewBag.TotalActualBudget = totalActual;
 
             ViewBag.IncomeTotal = incomeTotal;
             ViewBag.ExpenseTotal = expenseTotal;
@@ -68,7 +73,6 @@ namespace SmartStudent.Controllers
             ViewBag.SelectedYear = year;
             ViewBag.AvailableMonths = months;
 
-            // Warnings
             var warnings = new List<string>();
             if (balance <= 0)
                 warnings.Add("<b>Warning:</b> Your balance is zero or negative!");

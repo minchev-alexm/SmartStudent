@@ -14,6 +14,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Include="bin\Debug\net8.0\wkhtmltox.dll" />
     <None Include="Views\Budget\Index.cshtml" />
     <None Include="Views\Config\Categories.cshtml" />
     <None Include="Views\charts.cshtml" />
@@ -26,6 +27,7 @@
 
   <ItemGroup>
     <PackageReference Include="BCrypt.Net-Next" Version="4.0.3" />
+    <PackageReference Include="DinkToPdf" Version="1.0.8" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="8.0.22" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="8.0.22" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="8.0.22">
