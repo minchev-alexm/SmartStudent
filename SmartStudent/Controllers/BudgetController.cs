@@ -1,8 +1,10 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore;
 using SmartStudent.Data;
 using SmartStudent.Models;
+using System.Security.Claims;
 
 namespace SmartStudent.Controllers
 {
@@ -16,19 +18,38 @@ namespace SmartStudent.Controllers
             _db = db;
         }
 
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
-            var budgets = _db.Budgets.ToList();
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
+            // Fetch budgets for the current user
+            var budgets = await _db.Budgets
+                .Where(b => b.UserId == userId)
+                .ToListAsync();
+
+            // Summary calculations
             decimal totalPlanned = budgets.Sum(b => b.Planned);
             decimal totalActual = budgets.Sum(b => b.Actual);
             decimal remaining = totalPlanned - totalActual;
             decimal overspent = totalActual > totalPlanned ? totalActual - totalPlanned : 0;
 
+            // Fetch transactions for this user to integrate income/expense totals
+            var incomeTotal = await _db.Transactions
+                .Where(t => t.UserId == userId && t.Type == "Income")
+                .SumAsync(t => (decimal?)t.Amount) ?? 0;
+
+            var expenseTotal = await _db.Transactions
+                .Where(t => t.UserId == userId && t.Type == "Expense")
+                .SumAsync(t => (decimal?)t.Amount) ?? 0;
+
             ViewBag.TotalPlanned = totalPlanned;
             ViewBag.TotalActual = totalActual;
             ViewBag.Remaining = remaining >= 0 ? remaining : 0;
             ViewBag.Overspent = overspent;
+
+            ViewBag.IncomeTotal = incomeTotal;
+            ViewBag.ExpenseTotal = expenseTotal;
+            ViewBag.Balance = incomeTotal - expenseTotal;
 
             return View(budgets);
         }
@@ -37,7 +58,6 @@ namespace SmartStudent.Controllers
         {
             var categories = _db.Categories.Select(c => c.Name).ToList();
             ViewBag.CategoryList = new SelectList(categories);
-
             return View();
         }
 
@@ -47,6 +67,7 @@ namespace SmartStudent.Controllers
         {
             if (ModelState.IsValid)
             {
+                model.UserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
                 _db.Budgets.Add(model);
                 _db.SaveChanges();
                 return RedirectToAction("Index");
@@ -57,7 +78,8 @@ namespace SmartStudent.Controllers
 
         public IActionResult Edit(int id)
         {
-            var budget = _db.Budgets.Find(id);
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var budget = _db.Budgets.FirstOrDefault(b => b.Id == id && b.UserId == userId);
             if (budget == null) return NotFound();
 
             var categories = _db.Categories.Select(c => c.Name).ToList();
@@ -72,7 +94,15 @@ namespace SmartStudent.Controllers
         {
             if (ModelState.IsValid)
             {
-                _db.Budgets.Update(model);
+                var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                var budget = _db.Budgets.FirstOrDefault(b => b.Id == model.Id && b.UserId == userId);
+                if (budget == null) return NotFound();
+
+                budget.Category = model.Category;
+                budget.Planned = model.Planned;
+                budget.Actual = model.Actual;
+
+                _db.Budgets.Update(budget);
                 _db.SaveChanges();
                 return RedirectToAction("Index");
             }
@@ -83,15 +113,13 @@ namespace SmartStudent.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult Delete(int id)
         {
-            var budget = _db.Budgets.Find(id);
-            if (budget == null)
-                return NotFound();
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var budget = _db.Budgets.FirstOrDefault(b => b.Id == id && b.UserId == userId);
+            if (budget == null) return NotFound();
 
             _db.Budgets.Remove(budget);
             _db.SaveChanges();
-
             return RedirectToAction("Index");
         }
-
     }
 }

@@ -94,6 +94,24 @@
                         </div>
                     </div>
 
+<div class="border rounded px-3 py-2 mb-4" style="max-width: 280px;">
+    <div class="d-flex justify-content-between">
+        <span class="text-muted">Income</span>
+        <span class="fw-semibold text-success">
+            @ViewBag.IncomeTotal.ToString("C")
+        </span>
+    </div>
+
+    <div class="d-flex justify-content-between">
+        <span class="text-muted">Expense</span>
+        <span class="fw-semibold text-danger">
+            @ViewBag.ExpenseTotal.ToString("C")
+        </span>
+    </div>
+
+</div>
+
+
                     <!-- Transactions Table Card -->
                     <div class="card mb-4">
                         <div class="card-header d-flex align-items-center">

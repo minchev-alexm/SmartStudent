@@ -43,13 +43,17 @@ namespace SmartStudent.Controllers
                     month = DateTime.Now.Month;
                     year = DateTime.Now.Year;
                 }
+
             }
+            var startDate = new DateTime(year.Value, month.Value, 1);
+            var endDate = startDate.AddMonths(1);
 
             var transactions = await db.Transactions
-                .Where(t => t.UserId == userId && t.Date.Month == month && t.Date.Year == year)
+                .Where(t => t.UserId == userId && t.Date >= startDate && t.Date < endDate)
                 .OrderByDescending(t => t.Date)
                 .Take(10)
                 .ToListAsync();
+
 
             var incomeTotal = await db.Transactions
                 .Where(t => t.UserId == userId && t.Type == "Income" && t.Date.Month == month && t.Date.Year == year)
@@ -60,9 +64,10 @@ namespace SmartStudent.Controllers
                 .SumAsync(t => (decimal?)t.Amount) ?? 0;
 
             var balance = incomeTotal - expenseTotal;
-            var budgets = await db.Budgets.ToListAsync();
+            var budgets = await db.Budgets.Where(b => b.UserId == userId).ToListAsync();
             var totalPlanned = budgets.Sum(b => b.Planned);
             var totalActual = budgets.Sum(b => b.Actual);
+
             ViewBag.TotalPlannedBudget = totalPlanned;
             ViewBag.TotalActualBudget = totalActual;
 
@@ -76,6 +81,13 @@ namespace SmartStudent.Controllers
             var warnings = new List<string>();
             if (balance <= 0)
                 warnings.Add("<b>Warning:</b> Your balance is zero or negative!");
+
+            if (totalActual > totalPlanned)
+            {
+                var overspentAmount = totalActual - totalPlanned;
+                warnings.Add($"<b>Warning:</b> You have overspent your planned budget by {overspentAmount:C}!");
+            }
+
             ViewBag.Warnings = warnings;
 
             return View(transactions);

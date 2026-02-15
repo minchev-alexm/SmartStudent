@@ -21,12 +21,22 @@ namespace SmartStudent.Controllers
         public async Task<IActionResult> Index()
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
             var transactions = await db.Transactions
                 .Where(t => t.UserId == userId)
                 .ToListAsync();
 
+            ViewBag.IncomeTotal = transactions
+                .Where(t => t.Type == "Income")
+                .Sum(t => t.Amount);
+
+            ViewBag.ExpenseTotal = transactions
+                .Where(t => t.Type == "Expense")
+                .Sum(t => t.Amount);
+
             return View(transactions);
         }
+
 
         public async Task<IActionResult> ViewTransaction(int id)
         {
