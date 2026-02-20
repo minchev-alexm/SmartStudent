@@ -118,7 +118,7 @@ User says: {request.UserMessage}
 ";
 
                 var client = _httpClientFactory.CreateClient();
-                var apiUrl = "http://localhost:1234/api/v1/chat";
+                var apiUrl = "https://eligibly-peaceless-ginette.ngrok-free.dev/api/v1/chat";
 
                 var payload = new
                 {
