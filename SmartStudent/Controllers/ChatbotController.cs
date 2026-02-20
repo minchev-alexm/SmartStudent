@@ -1,10 +1,22 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿/*
+╒═════════════════════════════════════════════════════════════════════════════╕
+│  File:  ChatbotController.cs				            Date: 2/20/2026       │
+╞═════════════════════════════════════════════════════════════════════════════╡
+│																			  │
+│  Provides an authenticated API endpoint for the SmartStudent AI assistant.  │
+│																			  │
+│		  													                  │
+╘═════════════════════════════════════════════════════════════════════════════╛
+*/
+
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SmartStudent.Data;
 using System.Net.Http.Headers;
 using System.Security.Claims;
 using Microsoft.EntityFrameworkCore;
 using System.Text;
+using SmartStudent.Models;
 using System.Text.Json;
 
 namespace SmartStudent.Controllers
@@ -17,8 +29,10 @@ namespace SmartStudent.Controllers
         private readonly IHttpClientFactory _httpClientFactory;
         private readonly ApplicationDbContext _db;
 
-        // Flag to control whether numeric queries go directly to AI
+        // Flag to control if queries asking for data such as income etc should be answered by AI or by system - bypassing AI
         private const bool AlwaysUseAI = false;
+
+        string modelName = "qwen/qwen2.5-vl-7b";
 
         public ChatbotController(IHttpClientFactory httpClientFactory, ApplicationDbContext db)
         {
@@ -26,6 +40,7 @@ namespace SmartStudent.Controllers
             _db = db;
         }
 
+        //Fix currency fomat
         string FormatCurrency(decimal amount)
         {
             return amount < 0
@@ -33,6 +48,7 @@ namespace SmartStudent.Controllers
                 : amount.ToString("C");
         }
 
+        //POST for SendMessage
         [HttpPost("SendMessage")]
         public async Task<IActionResult> SendMessage([FromBody] ChatRequest request)
         {
@@ -106,7 +122,7 @@ User says: {request.UserMessage}
 
                 var payload = new
                 {
-                    model = "google/gemma-3-4b:2",
+                    model = modelName,
                     input = systemPrompt,
                     temperature = 0.7,
                     top_p = 0.9
@@ -133,10 +149,5 @@ User says: {request.UserMessage}
                 return StatusCode(500, new { error = "Error contacting AI model.", details = ex.Message });
             }
         }
-    }
-
-    public class ChatRequest
-    {
-        public required string UserMessage { get; set; }
     }
 }

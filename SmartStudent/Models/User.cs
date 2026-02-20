@@ -1,4 +1,15 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿/*
+╒═════════════════════════════════════════════════════════════════════════════╕
+│  File:  User.cs				                            Date: 1/4/2026    │
+╞═════════════════════════════════════════════════════════════════════════════╡
+│																			  │
+│                  Represents a registered application user                   │
+│																			  │
+│		  													                  │
+╘═════════════════════════════════════════════════════════════════════════════╛
+*/
+
+using System.ComponentModel.DataAnnotations;
 
 namespace SmartStudent.Models
 {

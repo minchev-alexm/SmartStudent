@@ -38,6 +38,7 @@
 
   <ItemGroup>
     <Folder Include="wwwroot\css\" />
+    <Folder Include="wwwroot\documents\" />
   </ItemGroup>
 
 </Project>

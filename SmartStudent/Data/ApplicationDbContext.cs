@@ -1,4 +1,16 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿/*
+╒═════════════════════════════════════════════════════════════════════════════╕
+│  File:  ApplicationDbContext.cs				            Date: 1/5/2026    │
+╞═════════════════════════════════════════════════════════════════════════════╡
+│																			  │
+│           This class defines the Entity Framework Core DbContext            │
+│																			  │
+│		  													                  │
+╘═════════════════════════════════════════════════════════════════════════════╛
+*/
+
+
+using Microsoft.EntityFrameworkCore;
 using SmartStudent.Models;
 
 namespace SmartStudent.Data

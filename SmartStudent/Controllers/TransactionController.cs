@@ -1,4 +1,15 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿/*
+╒═════════════════════════════════════════════════════════════════════════════╕
+│  File:  TransactionController.cs				            Date: 2/20/2026   │
+╞═════════════════════════════════════════════════════════════════════════════╡
+│																			  │
+│	           Handles CRUD operations for user transactions				  │
+│																			  │
+│		  													                  │
+╘═════════════════════════════════════════════════════════════════════════════╛
+*/
+
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -18,6 +29,7 @@ namespace SmartStudent.Controllers
             this.db = db;
         }
 
+        //GET for Index
         public async Task<IActionResult> Index()
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -37,7 +49,7 @@ namespace SmartStudent.Controllers
             return View(transactions);
         }
 
-
+        //GET for ViewTransactions
         public async Task<IActionResult> ViewTransaction(int id)
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -52,6 +64,7 @@ namespace SmartStudent.Controllers
             return View(transaction);
         }
 
+        //GET for CreateTransaction
         [HttpGet]
         public IActionResult CreateTransaction()
         {
@@ -61,35 +74,24 @@ namespace SmartStudent.Controllers
             return View();
         }
 
+        //POST for CreateTransaction
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> CreateTransaction(Transaction model)
         {
-            Console.WriteLine("CreateTransaction called");
-            Console.WriteLine($"Model received: Type={model.Type}, Category={model.Category}, Amount={model.Amount}, Date={model.Date}, DocumentFile={(model.DocumentFile != null ? model.DocumentFile.FileName : "null")}");
-
+            //Is form data valid
             if (!ModelState.IsValid)
             {
-                Console.WriteLine("ModelState is invalid:");
-                foreach (var state in ModelState)
-                {
-                    foreach (var error in state.Value.Errors)
-                    {
-                        Console.WriteLine($" - {state.Key}: {error.ErrorMessage}");
-                    }
-                }
-
                 var categories = db.Categories.Select(c => c.Name).ToList();
                 ViewBag.CategoryList = new SelectList(categories, model.Category);
                 return View(model);
             }
 
+            //get user ID
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            Console.WriteLine($"UserId: {userId}");
 
             if (string.IsNullOrEmpty(userId))
             {
-                Console.WriteLine("UserId is null or empty");
                 ModelState.AddModelError("", "User is not logged in.");
                 var categories = db.Categories.Select(c => c.Name).ToList();
                 ViewBag.CategoryList = new SelectList(categories, model.Category);
@@ -97,6 +99,7 @@ namespace SmartStudent.Controllers
             }
             model.UserId = userId;
 
+            //Upload file
             if (model.DocumentFile != null && model.DocumentFile.Length > 0)
             {
                 try
@@ -109,32 +112,26 @@ namespace SmartStudent.Controllers
                     using var stream = new FileStream(filePath, FileMode.Create);
                     await model.DocumentFile.CopyToAsync(stream);
                     model.DocumentPath = $"/documents/{fileName}";
-                    Console.WriteLine($"File uploaded successfully: {model.DocumentPath}");
                 }
+
                 catch (Exception ex)
                 {
-                    Console.WriteLine($"Error uploading file: {ex.Message}");
                     ModelState.AddModelError("", "File upload failed.");
                     var categories = db.Categories.Select(c => c.Name).ToList();
                     ViewBag.CategoryList = new SelectList(categories, model.Category);
                     return View(model);
                 }
             }
-            else
-            {
-                Console.WriteLine("No file uploaded");
-            }
 
+            //Save to DB
             try
             {
                 db.Transactions.Add(model);
-                Console.WriteLine("Transaction added to context, calling SaveChangesAsync");
                 await db.SaveChangesAsync();
-                Console.WriteLine($"Transaction saved successfully: Id={model.Id}");
             }
+
             catch (Exception ex)
             {
-                Console.WriteLine($"Error saving transaction to database: {ex.Message}");
                 ModelState.AddModelError("", "Database save failed.");
                 var categories = db.Categories.Select(c => c.Name).ToList();
                 ViewBag.CategoryList = new SelectList(categories, model.Category);
@@ -144,7 +141,7 @@ namespace SmartStudent.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-
+        //POST for DeleteTransaction
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteTransaction(int id)
@@ -173,7 +170,7 @@ namespace SmartStudent.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-
+        //GET for EditTransaction
         [HttpGet]
         public async Task<IActionResult> EditTransaction(int id)
         {
@@ -188,6 +185,7 @@ namespace SmartStudent.Controllers
             return View(transaction);
         }
 
+        //POST for EditTransaction
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> EditTransaction(Transaction model)
@@ -207,6 +205,7 @@ namespace SmartStudent.Controllers
             transaction.Category = model.Category;
             transaction.Amount = model.Amount;
 
+            //File upload
             if (model.DocumentFile != null && model.DocumentFile.Length > 0)
             {
                 var uploadsFolder = Path.Combine(
@@ -216,6 +215,7 @@ namespace SmartStudent.Controllers
 
                 Directory.CreateDirectory(uploadsFolder);
 
+                //Replace file
                 if (!string.IsNullOrEmpty(transaction.DocumentPath))
                 {
                     var oldFilePath = Path.Combine(
@@ -236,11 +236,9 @@ namespace SmartStudent.Controllers
                 transaction.DocumentPath = $"/documents/{fileName}";
             }
 
+            //Save to DB
             await db.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
-
-
-
     }
 }

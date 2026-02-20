@@ -1,4 +1,15 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿/*
+╒═════════════════════════════════════════════════════════════════════════════╕
+│  File:  ConfigController.cs				            Date: 2/20/2026       │
+╞═════════════════════════════════════════════════════════════════════════════╡
+│																			  │
+│	    Handles CRUD operations for user created categories and settings	  │
+│																			  │
+│		  													                  │
+╘═════════════════════════════════════════════════════════════════════════════╛
+*/
+
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using SmartStudent.Data;
@@ -16,17 +27,20 @@ namespace SmartStudent.Controllers
             this.db = db;
         }
 
+        //GET for Categories
         public async Task<IActionResult> Categories()
         {
             var categories = await db.Categories.ToListAsync();
             return View(categories);
         }
 
+        //GET for CreateCategory
         public IActionResult CreateCategory()
         {
             return View();
         }
 
+        //POST for CreateCategory
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> CreateCategory(Category category)
@@ -37,6 +51,7 @@ namespace SmartStudent.Controllers
             return RedirectToAction(nameof(Categories));
         }
 
+        //GET for EditCategory
         public async Task<IActionResult> EditCategory(int id)
         {
             var category = await db.Categories.FindAsync(id);
@@ -44,6 +59,7 @@ namespace SmartStudent.Controllers
             return View(category);
         }
 
+        //POST for EditCategory
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> EditCategory(Category category)
@@ -54,6 +70,7 @@ namespace SmartStudent.Controllers
             return RedirectToAction(nameof(Categories));
         }
 
+        //POST for DeleteCategory
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteCategory(int id)
@@ -67,8 +84,7 @@ namespace SmartStudent.Controllers
             return RedirectToAction(nameof(Categories));
         }
 
-        //Settings
-
+        //GET for Settings
         public IActionResult Settings()
         {
             return View();

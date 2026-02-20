@@ -1,4 +1,15 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿/*
+╒═════════════════════════════════════════════════════════════════════════════╕
+│  File:  BudgetController.cs				            Date: 2/20/2026       │
+╞═════════════════════════════════════════════════════════════════════════════╡
+│																			  │
+│	               Handles CRUD operations for user budget			          │
+│																			  │
+│		  													                  │
+╘═════════════════════════════════════════════════════════════════════════════╛
+*/
+
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -18,6 +29,7 @@ namespace SmartStudent.Controllers
             _db = db;
         }
 
+        //GET for Index
         public async Task<IActionResult> Index()
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -54,6 +66,7 @@ namespace SmartStudent.Controllers
             return View(budgets);
         }
 
+        //GET for Add
         public IActionResult Add()
         {
             var categories = _db.Categories.Select(c => c.Name).ToList();
@@ -61,6 +74,7 @@ namespace SmartStudent.Controllers
             return View();
         }
 
+        //POST for Add
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult Add(Budget model)
@@ -76,6 +90,7 @@ namespace SmartStudent.Controllers
             return View(model);
         }
 
+        //GET for Edit
         public IActionResult Edit(int id)
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -88,6 +103,7 @@ namespace SmartStudent.Controllers
             return View(budget);
         }
 
+        //POST for Edit
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult Edit(Budget model)
@@ -109,6 +125,7 @@ namespace SmartStudent.Controllers
             return View(model);
         }
 
+        //POST for Delete
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult Delete(int id)

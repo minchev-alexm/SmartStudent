@@ -1,4 +1,15 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿/*
+╒═════════════════════════════════════════════════════════════════════════════╕
+│  File:  LoginViewModel.cs				                    Date: 1/5/2026    │
+╞═════════════════════════════════════════════════════════════════════════════╡
+│																			  │
+│                    Model for user login credentials                         │
+│																			  │
+│		  													                  │
+╘═════════════════════════════════════════════════════════════════════════════╛
+*/
+
+using System.ComponentModel.DataAnnotations;
 
 namespace SmartStudent.Models
 {

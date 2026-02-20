@@ -1,3 +1,14 @@
+﻿/*
+╒═════════════════════════════════════════════════════════════════════════════╕
+│  File: Program.cs                                         Date: 1/1/2026    │
+╞═════════════════════════════════════════════════════════════════════════════╡
+│																			  │
+│                         Application entry point                             │
+│			   configures services, authentication, and routing				  │
+│		  													                  │
+╘═════════════════════════════════════════════════════════════════════════════╛
+*/
+
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.EntityFrameworkCore;
 using SmartStudent.Data;

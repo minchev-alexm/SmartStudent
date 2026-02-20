@@ -1,9 +1,9 @@
 ﻿/*
 ╒═════════════════════════════════════════════════════════════════════════════╕
-│  File:  MonthYear.cs				                        Date: 1/12/2026   │
+│  File:  ChatRequest.cs				                    Date: 1/5/2026    │
 ╞═════════════════════════════════════════════════════════════════════════════╡
 │																			  │
-│                    Represents a month and year pair.                        │
+│               Represents a user message sent to AI Assitant                 │
 │																			  │
 │		  													                  │
 ╘═════════════════════════════════════════════════════════════════════════════╛
@@ -11,9 +11,8 @@
 
 namespace SmartStudent.Models
 {
-    public class MonthYear
+    public class ChatRequest
     {
-        public int Month { get; set; }
-        public int Year { get; set; }
+        public required string UserMessage { get; set; }
     }
 }

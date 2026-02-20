@@ -1,4 +1,15 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿/*
+╒═════════════════════════════════════════════════════════════════════════════╕
+│  File:  DashboaredController.cs				            Date: 2/20/2026   │
+╞═════════════════════════════════════════════════════════════════════════════╡
+│																			  │
+│	           Provides financial overview for logged in users and shows	  │
+│			                   recent transactions							  │
+│		  													                  │
+╘═════════════════════════════════════════════════════════════════════════════╛
+*/
+
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using SmartStudent.Data;
@@ -18,10 +29,12 @@ namespace SmartStudent.Controllers
             this.db = db;
         }
 
+        //GET for Index
         public async Task<IActionResult> Index(int? month, int? year)
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
+            //Get data for selected month/year
             var months = await db.Transactions
                 .Where(t => t.UserId == userId)
                 .Select(t => new MonthYear { Month = t.Date.Month, Year = t.Date.Year })
@@ -38,6 +51,7 @@ namespace SmartStudent.Controllers
                     month = latest.Month;
                     year = latest.Year;
                 }
+
                 else
                 {
                     month = DateTime.Now.Month;
@@ -48,6 +62,7 @@ namespace SmartStudent.Controllers
             var startDate = new DateTime(year.Value, month.Value, 1);
             var endDate = startDate.AddMonths(1);
 
+            //Get data from DB
             var transactions = await db.Transactions
                 .Where(t => t.UserId == userId && t.Date >= startDate && t.Date < endDate)
                 .OrderByDescending(t => t.Date)
@@ -78,6 +93,7 @@ namespace SmartStudent.Controllers
             ViewBag.SelectedYear = year;
             ViewBag.AvailableMonths = months;
 
+            //Warnings
             var warnings = new List<string>();
             if (balance <= 0)
                 warnings.Add("<b>Warning:</b> Your balance is zero or negative!");
@@ -93,6 +109,7 @@ namespace SmartStudent.Controllers
             return View(transactions);
         }
 
+        //GET for Error
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {

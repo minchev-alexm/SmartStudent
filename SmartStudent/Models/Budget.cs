@@ -1,4 +1,15 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿/*
+╒═════════════════════════════════════════════════════════════════════════════╕
+│  File:  Budget.cs				                            Date: 1/8/2026    │
+╞═════════════════════════════════════════════════════════════════════════════╡
+│																			  │
+│     Represents a user's budget category with planned and actual spending.   │
+│																			  │
+│		  													                  │
+╘═════════════════════════════════════════════════════════════════════════════╛
+*/
+
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace SmartStudent.Models

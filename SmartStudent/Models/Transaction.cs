@@ -1,4 +1,15 @@
-﻿using System;
+﻿/*
+╒═════════════════════════════════════════════════════════════════════════════╕
+│  File:  Transaction.cs		                            Date: 1/7/2026    │
+╞═════════════════════════════════════════════════════════════════════════════╡
+│																			  │
+│               Represents a financial transaction for a user                 │
+│																			  │
+│		  													                  │
+╘═════════════════════════════════════════════════════════════════════════════╛
+*/
+
+using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.AspNetCore.Http;

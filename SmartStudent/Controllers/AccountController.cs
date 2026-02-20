@@ -1,4 +1,15 @@
-﻿using Microsoft.AspNetCore.Authentication;
+﻿/*
+╒═════════════════════════════════════════════════════════════════════════════╕
+│  File:  AccountController.cs				            Date: 2/20/2026       │
+╞═════════════════════════════════════════════════════════════════════════════╡
+│																			  │
+│	  This controller handles user authentication and account management.	  │
+│																			  │
+│		  													                  │
+╘═════════════════════════════════════════════════════════════════════════════╛
+*/
+
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -17,13 +28,14 @@ namespace SmartStudent.Controllers
             this.db = db;
         }
 
+        //GET for login page
         [HttpGet]
         public IActionResult Login()
         {
             return View();
         }
 
-
+        //POST for login page
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Login(LoginViewModel model)
@@ -45,6 +57,7 @@ namespace SmartStudent.Controllers
                 }
             }
 
+            //Wrong credentials
             if (user == null)
             {
                 ModelState.AddModelError("", "Invalid email or password");
@@ -78,12 +91,15 @@ namespace SmartStudent.Controllers
             return RedirectToAction("Index", "Dashboard");
         }
 
+        //GET for Register
         [HttpGet]
         public IActionResult Register()
         {
             return View();
         }
 
+
+        //POST for Logout
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Logout()

@@ -1,4 +1,15 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿/*
+╒═════════════════════════════════════════════════════════════════════════════╕
+│  File:  Category.cs		                                Date: 1/2/2026    │
+╞═════════════════════════════════════════════════════════════════════════════╡
+│																			  │
+│                    Represents a user created category                       │
+│																			  │
+│		  													                  │
+╘═════════════════════════════════════════════════════════════════════════════╛
+*/
+
+using System.ComponentModel.DataAnnotations;
 
 namespace SmartStudent.Models
 {
