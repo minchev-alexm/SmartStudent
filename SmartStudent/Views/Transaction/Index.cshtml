@@ -101,8 +101,30 @@
                     <div class="d-flex align-items-center justify-content-between mb-3">
                         <h1 class="mt-4 mb-0 fs-2">Transactions</h1>
                         <div class="text-muted fs-5">
-                            <i class="fas fa-calendar-alt me-2"></i>December 2025
-                        </div>
+    <i class="fas fa-calendar-alt me-2"></i>
+
+    <form method="get" id="monthForm" class="d-inline">
+        <input type="hidden" name="year" id="yearInput" value="@ViewBag.SelectedYear" />
+
+        <select name="month" class="form-select d-inline w-auto" id="monthSelect">
+@foreach (var m in (List<SmartStudent.Models.MonthYear>)ViewBag.AvailableMonths)
+{
+    if (m.Month == (int)ViewBag.SelectedMonth && m.Year == (int)ViewBag.SelectedYear)
+    {
+        <option value="@m.Month" data-year="@m.Year" selected>
+            @System.Globalization.CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(m.Month) @m.Year
+        </option>
+    }
+    else
+    {
+        <option value="@m.Month" data-year="@m.Year">
+            @System.Globalization.CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(m.Month) @m.Year
+        </option>
+    }
+}
+        </select>
+    </form>
+</div>
                     </div>
 
 <div class="border rounded px-3 py-2 mb-4" style="max-width: 280px;">
@@ -211,5 +233,21 @@ document.addEventListener("DOMContentLoaded", function () {
     applyTypeColors();
 
     dataTable.on("datatable.update", applyTypeColors);
+});
+</script>
+
+
+            <script>
+document.addEventListener("DOMContentLoaded", function() {
+    const monthSelect = document.getElementById("monthSelect");
+    const yearInput = document.getElementById("yearInput");
+
+    monthSelect.addEventListener("change", function() {
+        const selectedOption = monthSelect.options[monthSelect.selectedIndex];
+        const year = selectedOption.getAttribute("data-year");
+
+        yearInput.value = year;
+        monthSelect.form.submit();
+    });
 });
 </script>

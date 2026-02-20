@@ -30,21 +30,66 @@ namespace SmartStudent.Controllers
         }
 
         //GET for Index
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(int? month, int? year)
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
-            var transactions = await db.Transactions
+            // Get available months/years that contain transactions
+            var months = await db.Transactions
                 .Where(t => t.UserId == userId)
+                .Select(t => new MonthYear
+                {
+                    Month = t.Date.Month,
+                    Year = t.Date.Year
+                })
+                .Distinct()
+                .OrderByDescending(m => m.Year)
+                .ThenByDescending(m => m.Month)
                 .ToListAsync();
 
-            ViewBag.IncomeTotal = transactions
+            // Default selection
+            if (!month.HasValue || !year.HasValue)
+            {
+                var latest = months.FirstOrDefault();
+
+                if (latest != null)
+                {
+                    month = latest.Month;
+                    year = latest.Year;
+                }
+                else
+                {
+                    month = DateTime.Now.Month;
+                    year = DateTime.Now.Year;
+                }
+            }
+
+            var startDate = new DateTime(year.Value, month.Value, 1);
+            var endDate = startDate.AddMonths(1);
+
+            // Filter transactions for selected month
+            var transactions = await db.Transactions
+                .Where(t => t.UserId == userId &&
+                            t.Date >= startDate &&
+                            t.Date < endDate)
+                .OrderByDescending(t => t.Date)
+                .ToListAsync();
+
+            // Monthly totals
+            var incomeTotal = transactions
                 .Where(t => t.Type == "Income")
                 .Sum(t => t.Amount);
 
-            ViewBag.ExpenseTotal = transactions
+            var expenseTotal = transactions
                 .Where(t => t.Type == "Expense")
                 .Sum(t => t.Amount);
+
+            // Send data to view
+            ViewBag.IncomeTotal = incomeTotal;
+            ViewBag.ExpenseTotal = expenseTotal;
+            ViewBag.SelectedMonth = month;
+            ViewBag.SelectedYear = year;
+            ViewBag.AvailableMonths = months;
 
             return View(transactions);
         }
