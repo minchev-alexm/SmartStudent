@@ -116,7 +116,7 @@ Here is the user's financial summary for the current month (DO NOT change these 
 Respond helpfully to the user's question.
 User says: {request.UserMessage}
 ";
-
+                    
                 var client = _httpClientFactory.CreateClient();
                 var apiUrl = "https://eligibly-peaceless-ginette.ngrok-free.dev/api/v1/chat";
 
