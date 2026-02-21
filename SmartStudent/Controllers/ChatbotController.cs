@@ -144,7 +144,7 @@ namespace SmartStudent.Controllers
                         return Ok(new { aiMessage = reply });
                 }
 
-                // ✔ AI FALLBACK
+                // AI FALLBACK
                 var systemPrompt = $@"
 You are a personal finance assistant.
 
@@ -153,7 +153,7 @@ Here is the user's financial summary for the current month:
 - Expenses: {FormatCurrency(expenseTotal)}
 - Balance: {FormatCurrency(balance)}
 - Planned Budget: {FormatCurrency(plannedBudget)}
-- Actual Budget: {FormatCurrency(actualBudget)}
+- Remaining Budget: {FormatCurrency(actualBudget)}
 
 Use these numbers exactly when relevant.
 
