@@ -17,7 +17,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.WebHost.ConfigureKestrel(options =>
 {
-    options.ListenAnyIP(801); // HTTP port 80
+    options.ListenAnyIP(80); // HTTP port 80
 });
 
 
