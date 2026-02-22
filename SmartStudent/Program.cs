@@ -12,12 +12,13 @@
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.EntityFrameworkCore;
 using SmartStudent.Data;
+using SmartStudent.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.WebHost.ConfigureKestrel(options =>
 {
-    options.ListenAnyIP(80); // HTTP port 80
+    options.ListenAnyIP(801); // HTTP port 80
 });
 
 
@@ -49,6 +50,8 @@ if (!app.Environment.IsDevelopment())
 
 //app.UseHttpsRedirection();
 app.UseStaticFiles();
+
+app.UseMiddleware<VisitorLoggingMiddleware>();
 
 app.UseRouting();
 

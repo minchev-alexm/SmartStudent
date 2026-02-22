@@ -24,5 +24,6 @@ namespace SmartStudent.Data
         public DbSet<Transaction> Transactions { get; set; }
         public DbSet<Budget> Budgets { get; set; }
         public DbSet<Category> Categories { get; set; }
+        public DbSet<VisitorLog> VisitorLogs { get; set; }
     }
 }
