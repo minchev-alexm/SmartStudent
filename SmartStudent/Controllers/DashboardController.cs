@@ -115,5 +115,62 @@ namespace SmartStudent.Controllers
         {
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
+
+        //Statistics
+        public async Task<IActionResult> Statistics(int? month, int? year)
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var viewModel = new StatisticsViewModel();
+
+            // Transactions for selected month
+            var startDate = new DateTime(year ?? DateTime.Now.Year, month ?? DateTime.Now.Month, 1);
+            var endDate = startDate.AddMonths(1);
+
+            var transactions = await db.Transactions
+                .Where(t => t.UserId == userId && t.Date >= startDate && t.Date < endDate)
+                .OrderByDescending(t => t.Date)
+                .ToListAsync();
+
+            viewModel.RecentTransactions = transactions.Take(10).ToList();
+
+            viewModel.IncomeTotal = transactions
+                .Where(t => t.Type == "Income")
+                .Sum(t => t.Amount);
+
+            viewModel.ExpenseTotal = transactions
+                .Where(t => t.Type == "Expense")
+                .Sum(t => t.Amount);
+
+            // Monthly trend
+            var last6Months = Enumerable.Range(0, 6)
+                .Select(i => startDate.AddMonths(-i))
+                .OrderBy(d => d)
+                .ToList();
+
+            viewModel.Months = last6Months.Select(d => d.ToString("MMM yyyy")).ToList();
+
+            foreach (var d in last6Months)
+            {
+                viewModel.MonthlyIncome.Add(transactions
+                    .Where(t => t.Type == "Income" && t.Date.Month == d.Month && t.Date.Year == d.Year)
+                    .Sum(t => t.Amount));
+
+                viewModel.MonthlyExpense.Add(transactions
+                    .Where(t => t.Type == "Expense" && t.Date.Month == d.Month && t.Date.Year == d.Year)
+                    .Sum(t => t.Amount));
+            }
+
+            // Category breakdown
+            var categories = await db.Transactions
+                .Where(t => t.UserId == userId && t.Type == "Expense")
+                .GroupBy(t => t.Category)
+                .Select(g => new { Category = g.Key, Total = g.Sum(x => x.Amount) })
+                .ToListAsync();
+
+            viewModel.ExpenseCategories = categories.Select(c => c.Category ?? "").ToList();
+            viewModel.ExpenseCategoryTotals = categories.Select(c => c.Total).ToList();
+
+            return View(viewModel);
+        }
     }
 }
