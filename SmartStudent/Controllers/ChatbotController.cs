@@ -96,7 +96,11 @@ namespace SmartStudent.Controllers
         }
 
         private static string FormatCurrency(decimal amount)
-            => amount.ToString("C");
+        {
+            // Use absolute value to avoid negative formatting issues
+            var formatted = Math.Abs(amount).ToString("N2") + " EUR";
+            return amount < 0 ? "-" + formatted : formatted;
+        }
 
         [HttpPost("SendMessage")]
         public async Task<IActionResult> SendMessage([FromBody] ChatRequest request)
@@ -169,9 +173,9 @@ Here is the user's financial summary for the current month:
 - Expenses: {FormatCurrency(expenseTotal)}
 - Balance: {FormatCurrency(balance)}
 - Planned Budget: {FormatCurrency(plannedBudget)}
-- Remaining Budget: {FormatCurrency(actualBudget)}
+- Remaining Budget: {FormatCurrency(plannedBudget - actualBudget)}
 
-Use these numbers exactly when relevant.
+All amounts are in EUR. Use these numbers exactly when relevant.
 
 User says: {request.UserMessage}
 ";

@@ -119,9 +119,9 @@
                         <div class="col-xl-4 col-md-6">
                             <div class="card bg-primary text-white mb-4 shadow-sm">
                                 <div class="card-body">
-                                    Balance: @Html.Raw(Model.Balance < 0 
-                                        ? $"<b>-</b>{Math.Abs(Model.Balance).ToString("C")}" 
-                                        : $"{Model.Balance.ToString("C")}")
+                                  Balance: @Html.Raw(Model.Balance < 0 
+    ? $"<b>-</b>{Math.Abs(Model.Balance).ToString("N2")} EUR" 
+    : $"{Model.Balance.ToString("N2")} EUR")
                                 </div>
                                 <div class="card-footer d-flex align-items-center justify-content-between">
                                     <a class="small text-white stretched-link" href="/Budget/Index">View Details</a>
@@ -132,7 +132,7 @@
 
                         <div class="col-xl-4 col-md-6">
                             <div class="card bg-success text-white mb-4 shadow-sm">
-                                <div class="card-body">Income: @Model.IncomeTotal.ToString("C")</div>
+                            <div class="card-body">Income: @Model.IncomeTotal.ToString("N2") EUR</div>
                                 <div class="card-footer d-flex align-items-center justify-content-between">
                                     <a class="small text-white stretched-link" href="/Transaction/Index">View Details</a>
                                     <div class="small text-white"><i class="fas fa-angle-right"></i></div>
@@ -142,7 +142,7 @@
 
                         <div class="col-xl-4 col-md-6">
                             <div class="card bg-danger text-white mb-4 shadow-sm">
-                                <div class="card-body">Expenses: @Model.ExpenseTotal.ToString("C")</div>
+<div class="card-body">Expenses: @Model.ExpenseTotal.ToString("N2") EUR</div>
                                 <div class="card-footer d-flex align-items-center justify-content-between">
                                     <a class="small text-white stretched-link" href="/Transaction/Index">View Details</a>
                                     <div class="small text-white"><i class="fas fa-angle-right"></i></div>
@@ -179,9 +179,9 @@
                                             <td>@t.Date.ToString("dd/MM/yyyy")</td>
                                             <td>@t.Type</td>
                                             <td>@t.Category</td>
-                                            <td class="text-end fw-bold @(t.Type=="Income"?"text-success":"text-danger")">
-                                                @t.Amount.ToString("C")
-                                            </td>
+                                          <td class="text-end fw-bold @(t.Type=="Income"?"text-success":"text-danger")">
+    @t.Amount.ToString("N2") EUR
+</td>
                                         </tr>
                                     }
                                 </tbody>

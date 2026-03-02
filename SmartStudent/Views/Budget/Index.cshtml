@@ -105,24 +105,25 @@
 
                     <!-- Summary Cards -->
                    <div class="row">
+  <div class="row">
     <div class="col-xl-3 col-md-6">
         <div class="card bg-primary text-white mb-4">
-            <div class="card-body">Budget: @ViewBag.TotalPlanned.ToString("C")</div>
+            <div class="card-body">Budget: @ViewBag.TotalPlanned.ToString("N2") EUR</div>
         </div>
     </div>
     <div class="col-xl-3 col-md-6">
         <div class="card bg-success text-white mb-4">
-            <div class="card-body">Remaining: @ViewBag.Remaining.ToString("C")</div>
+            <div class="card-body">Remaining: @ViewBag.Remaining.ToString("N2") EUR</div>
         </div>
     </div>
     <div class="col-xl-3 col-md-6">
         <div class="card bg-warning text-dark mb-4">
-            <div class="card-body">Spent: @ViewBag.TotalActual.ToString("C")</div>
+            <div class="card-body">Spent: @ViewBag.TotalActual.ToString("N2") EUR</div>
         </div>
     </div>
     <div class="col-xl-3 col-md-6">
         <div class="card bg-danger text-white mb-4">
-            <div class="card-body">Overspent: @ViewBag.Overspent.ToString("C")</div>
+            <div class="card-body">Overspent: @ViewBag.Overspent.ToString("N2") EUR</div>
         </div>
     </div>
 </div>
@@ -153,15 +154,15 @@
             var difference = budget.Planned - budget.Actual;
             var colorClass = difference >= 0 ? "text-success fw-bold" : "text-danger fw-bold";
 
-            <tr class="@colorClass">
-                <td>@budget.Category</td>
-                <td>@budget.Planned.ToString("C")</td>
-                <td>@budget.Actual.ToString("C")</td>
-                <td>@difference.ToString("C")</td>
-                <td>
-                    <a asp-controller="Budget" asp-action="Edit" asp-route-id="@budget.Id" class="btn btn-sm btn-primary">Edit</a>
-                </td>
-            </tr>
+           <tr class="@colorClass">
+    <td>@budget.Category</td>
+    <td>@budget.Planned.ToString("N2") EUR</td>
+    <td>@budget.Actual.ToString("N2") EUR</td>
+    <td>@difference.ToString("N2") EUR</td>
+    <td>
+        <a asp-controller="Budget" asp-action="Edit" asp-route-id="@budget.Id" class="btn btn-sm btn-primary">Edit</a>
+    </td>
+</tr>
         }
     </tbody>
 </table>

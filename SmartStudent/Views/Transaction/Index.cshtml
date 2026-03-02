@@ -131,14 +131,14 @@
     <div class="d-flex justify-content-between">
         <span class="text-muted">Income</span>
         <span class="fw-semibold text-success">
-            @ViewBag.IncomeTotal.ToString("C")
+            @ViewBag.IncomeTotal.ToString("N2") EUR
         </span>
     </div>
 
     <div class="d-flex justify-content-between">
         <span class="text-muted">Expense</span>
         <span class="fw-semibold text-danger">
-            @ViewBag.ExpenseTotal.ToString("C")
+            @ViewBag.ExpenseTotal.ToString("N2") EUR
         </span>
     </div>
 
@@ -173,7 +173,7 @@
         <td>@transaction.Date.ToString("dd/MM/yyyy")</td>
         <td>@transaction.Type</td>
         <td>@transaction.Category</td>
-        <td>@transaction.Amount.ToString("C")</td>
+        <td>@transaction.Amount.ToString("N2") EUR</td>
         <td>
             <a class="btn btn-sm btn-primary" asp-controller="Transaction" asp-action="ViewTransaction" asp-route-id="@transaction.Id">View</a>
         </td>
