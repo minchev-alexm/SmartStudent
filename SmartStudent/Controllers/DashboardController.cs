@@ -11,6 +11,7 @@
 
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using SmartStudent.Data;
 using SmartStudent.Models;
@@ -34,7 +35,7 @@ namespace SmartStudent.Controllers
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
-            //Get data for selected month/year
+            // Get distinct months/years for which the user has transactions
             var months = await db.Transactions
                 .Where(t => t.UserId == userId)
                 .Select(t => new MonthYear { Month = t.Date.Month, Year = t.Date.Year })
@@ -43,6 +44,7 @@ namespace SmartStudent.Controllers
                 .ThenByDescending(t => t.Month)
                 .ToListAsync();
 
+            // Default to latest month/year if none provided
             if (!month.HasValue || !year.HasValue)
             {
                 var latest = months.FirstOrDefault();
@@ -51,25 +53,25 @@ namespace SmartStudent.Controllers
                     month = latest.Month;
                     year = latest.Year;
                 }
-
                 else
                 {
                     month = DateTime.Now.Month;
                     year = DateTime.Now.Year;
                 }
-
             }
+
+            // Define start/end dates for filtering transactions
             var startDate = new DateTime(year.Value, month.Value, 1);
             var endDate = startDate.AddMonths(1);
 
-            //Get data from DB
+            // Fetch transactions for selected month/year
             var transactions = await db.Transactions
                 .Where(t => t.UserId == userId && t.Date >= startDate && t.Date < endDate)
                 .OrderByDescending(t => t.Date)
                 .Take(10)
                 .ToListAsync();
 
-
+            // Calculate totals
             var incomeTotal = await db.Transactions
                 .Where(t => t.UserId == userId && t.Type == "Income" && t.Date.Month == month && t.Date.Year == year)
                 .SumAsync(t => (decimal?)t.Amount) ?? 0;
@@ -79,31 +81,38 @@ namespace SmartStudent.Controllers
                 .SumAsync(t => (decimal?)t.Amount) ?? 0;
 
             var balance = incomeTotal - expenseTotal;
+
+            // Budget totals
             var budgets = await db.Budgets.Where(b => b.UserId == userId).ToListAsync();
             var totalPlanned = budgets.Sum(b => b.Planned);
             var totalActual = budgets.Sum(b => b.Actual);
 
-            ViewBag.TotalPlannedBudget = totalPlanned;
-            ViewBag.TotalActualBudget = totalActual;
-
-            ViewBag.IncomeTotal = incomeTotal;
-            ViewBag.ExpenseTotal = expenseTotal;
-            ViewBag.Balance = balance;
-            ViewBag.SelectedMonth = month;
-            ViewBag.SelectedYear = year;
-            ViewBag.AvailableMonths = months;
-
-            //Warnings
+            // Prepare warnings
             var warnings = new List<string>();
             if (balance <= 0)
                 warnings.Add("<b>Warning:</b> Your balance is zero or negative!");
-
             if (totalActual > totalPlanned)
-            {
-                var overspentAmount = totalActual - totalPlanned;
-                warnings.Add($"<b>Warning:</b> You have overspent your planned budget by {overspentAmount:C}!");
-            }
+                warnings.Add($"<b>Warning:</b> You have overspent your planned budget by {(totalActual - totalPlanned):C}!");
 
+            // Prepare month dropdown as SelectListItems (tag helper compatible)
+            var monthOptions = months
+                .Select(m => new SelectListItem
+                {
+                    Text = System.Globalization.CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(m.Month) + " " + m.Year,
+                    Value = $"{m.Month}-{m.Year}",
+                    Selected = (m.Month == month && m.Year == year)
+                })
+                .ToList();
+
+            // Pass data to the view
+            ViewBag.MonthOptions = monthOptions;
+            ViewBag.SelectedMonth = month;
+            ViewBag.SelectedYear = year;
+            ViewBag.IncomeTotal = incomeTotal;
+            ViewBag.ExpenseTotal = expenseTotal;
+            ViewBag.Balance = balance;
+            ViewBag.TotalPlannedBudget = totalPlanned;
+            ViewBag.TotalActualBudget = totalActual;
             ViewBag.Warnings = warnings;
 
             return View(transactions);

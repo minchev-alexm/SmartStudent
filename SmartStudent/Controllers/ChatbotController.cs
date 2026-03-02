@@ -38,14 +38,25 @@ namespace SmartStudent.Controllers
         }
 
         // Detect intent using regex
+        // Detect intent using regex
         private static FinancialQueryIntent ClassifyIntent(string message)
         {
             if (string.IsNullOrWhiteSpace(message))
                 return FinancialQueryIntent.None;
 
-            message = message.ToLowerInvariant();
+            message = message.ToLowerInvariant().Trim();
 
-            // Explanation / analysis → ALWAYS AI
+            // ⚡ Prevent specific exact questions from going to AI
+            if (message == "what is my income")
+                return FinancialQueryIntent.Income;
+            if (message == "what is my expense")
+                return FinancialQueryIntent.Expenses;
+            if (message == "what is my budget")
+                return FinancialQueryIntent.Budget;
+            if (message == "what is my balance")
+                return FinancialQueryIntent.Balance;
+
+            // ALWAYS AI if explanation / analysis requested
             if (message.Contains("why") ||
                 message.Contains("explain") ||
                 message.Contains("reason") ||
@@ -54,7 +65,7 @@ namespace SmartStudent.Controllers
                 return FinancialQueryIntent.None;
             }
 
-            //Only intercept numeric questions
+            // Only intercept numeric questions
             bool asksAmount =
                 message.Contains("how much") ||
                 message.Contains("total") ||
@@ -64,6 +75,11 @@ namespace SmartStudent.Controllers
             if (!asksAmount)
                 return FinancialQueryIntent.None;
 
+            // ⚠ Avoid future or planned expenses — send to AI
+            if (Regex.IsMatch(message, @"\b(plan|planned|save|saving|trip|vacation|holiday|going to spend|around)\b"))
+                return FinancialQueryIntent.None;
+
+            // Match real monthly financial keywords
             if (Regex.IsMatch(message, @"\b(balance|remaining|left|net)\b"))
                 return FinancialQueryIntent.Balance;
 

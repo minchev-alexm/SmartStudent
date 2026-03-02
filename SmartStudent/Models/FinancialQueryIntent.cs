@@ -20,6 +20,7 @@ namespace SmartStudent.Models
         Balance,
         Income,
         Expenses,
-        Budget
+        Budget,
+        BlockAI
     }
 }
