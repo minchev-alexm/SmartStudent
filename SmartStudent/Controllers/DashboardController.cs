@@ -94,15 +94,17 @@ namespace SmartStudent.Controllers
             if (totalActual > totalPlanned)
                 warnings.Add($"<b>Warning:</b> You have overspent your planned budget by {(totalActual - totalPlanned):C}!");
 
-            // Prepare month dropdown as SelectListItems (tag helper compatible)
             var monthOptions = months
                 .Select(m => new SelectListItem
                 {
                     Text = System.Globalization.CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(m.Month) + " " + m.Year,
-                    Value = $"{m.Month}-{m.Year}",
+                    Value = m.Month.ToString(),
                     Selected = (m.Month == month && m.Year == year)
                 })
                 .ToList();
+
+            ViewBag.MonthOptions = monthOptions;
+            ViewBag.SelectedYear = year;
 
             // Pass data to the view
             ViewBag.MonthOptions = monthOptions;

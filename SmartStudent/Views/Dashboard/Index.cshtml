@@ -118,11 +118,23 @@
         <!-- Month Selector -->
         <div class="d-flex align-items-center gap-1">
             <i class="fas fa-calendar-alt me-1 text-muted"></i>
-         <form method="get" id="monthForm">
+<form method="get" id="monthForm">
     <input type="hidden" name="year" id="yearInput" value="@ViewBag.SelectedYear" />
 
-    <select name="month" class="form-select" id="monthSelect" asp-items="ViewBag.MonthOptions">
-    </select>
+<select name="month" class="form-select" id="monthSelect">
+@foreach (var m in (List<SelectListItem>)ViewBag.MonthOptions)
+{
+    var year = m.Text.Split(' ')[1];
+    if (m.Selected)
+    {
+        <option value="@m.Value" data-year="@year" selected="selected">@m.Text</option>
+    }
+    else
+    {
+        <option value="@m.Value" data-year="@year">@m.Text</option>
+    }
+}
+</select>
 </form>
         </div>
 
@@ -300,12 +312,12 @@ document.addEventListener("DOMContentLoaded", function() {
     const monthSelect = document.getElementById("monthSelect");
     const yearInput = document.getElementById("yearInput");
 
-    monthSelect.addEventListener("change", function() {
-        const selectedOption = monthSelect.options[monthSelect.selectedIndex];
-        const year = selectedOption.getAttribute("data-year");
-        yearInput.value = year;   
-        monthSelect.form.submit();  
-    });
+  monthSelect.addEventListener("change", function() {
+    const selectedOption = monthSelect.options[monthSelect.selectedIndex];
+    const year = selectedOption.getAttribute("data-year");
+    document.getElementById("yearInput").value = year;   
+    monthSelect.form.submit();  
+});
 });
 </script>
 
