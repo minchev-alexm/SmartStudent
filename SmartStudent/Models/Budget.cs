@@ -30,6 +30,6 @@ namespace SmartStudent.Models
         public decimal Planned { get; set; }
 
         [Column(TypeName = "decimal(18,2)")]
-        public decimal Actual { get; set; }
+        public decimal Actual { get; set; } = 0;
     }
 }

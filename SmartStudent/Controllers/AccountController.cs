@@ -107,5 +107,54 @@ namespace SmartStudent.Controllers
             await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
             return RedirectToAction("Login", "Account");
         }
+
+        // POST for Register
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Register(RegisterViewModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
+
+            // Check if email already exists
+            bool emailExists = await db.Users.AnyAsync(u => u.Email == model.Email);
+
+            if (emailExists)
+            {
+                ModelState.AddModelError("", "Email already registered.");
+                return View(model);
+            }
+
+            // Hash password
+            string passwordHash = BCrypt.Net.BCrypt.HashPassword(model.Password);
+
+            User user = new User
+            {
+                Name = model.Name,
+                Email = model.Email,
+                PasswordHash = passwordHash
+            };
+
+            db.Users.Add(user);
+            await db.SaveChangesAsync();
+
+            List<Claim> claims = new List<Claim>
+    {
+        new Claim(ClaimTypes.Name, user.Name),
+        new Claim(ClaimTypes.Email, user.Email),
+        new Claim(ClaimTypes.NameIdentifier, user.Id.ToString())
+    };
+
+            ClaimsIdentity identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+            ClaimsPrincipal principal = new ClaimsPrincipal(identity);
+
+            await HttpContext.SignInAsync(
+                CookieAuthenticationDefaults.AuthenticationScheme,
+                principal);
+
+            return RedirectToAction("Index", "Dashboard");
+        }
     }
 }

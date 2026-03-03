@@ -1,23 +1,10 @@
-﻿<!--
-╒═════════════════════════════════════════════════════════════════════════════╕
-│  File: Statiscics.cshtml                                 Date: 2/25/2026    │
-╞═════════════════════════════════════════════════════════════════════════════╡
-│				 															  │
-│                               Statistics                                    │
-│		                                                            		  │
-│		  													                  │
-╘═════════════════════════════════════════════════════════════════════════════╛
--->
-
-@model SmartStudent.Models.StatisticsViewModel
-
+﻿@model SmartStudent.Models.StatisticsViewModel
 @{
     ViewData["Title"] = "Monthly Statement";
 }
 
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
@@ -28,31 +15,21 @@
     <link href="~/css/styles.css" rel="stylesheet" />
     <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
     <style>
-        /* Hover effect for table rows */
         #datatablesSimple tbody tr:hover {
             background-color: rgba(0, 123, 255, 0.05);
             cursor: pointer;
         }
-
-        /* Chart gradient helper */
-        .chart-gradient {
-            background: linear-gradient(180deg, rgba(25,135,84,0.3) 0%, rgba(25,135,84,0) 100%);
-        }
     </style>
 </head>
-
 <body class="sb-nav-fixed">
     <!-- Top Navbar -->
     <nav class="sb-topnav navbar navbar-expand navbar-dark bg-dark">
-        <a class="navbar-brand d-flex align-items-center" href="/">
-            <img src="~/logo.png" alt="SmartStudent Logo" style="height:50px; width:auto;">
-        </a>
+        <a class="navbar-brand d-flex align-items-center" href="/"><img src="~/logo.png" alt="SmartStudent Logo" style="height:50px; width:auto;"></a>
         <button class="btn btn-link btn-sm order-1 order-lg-0 me-4 me-lg-0" id="sidebarToggle"><i class="fas fa-bars"></i></button>
-
         <ul class="navbar-nav ms-auto me-3 me-lg-4">
             <li class="nav-item dropdown">
                 <a class="nav-link dropdown-toggle d-flex align-items-center" id="navbarDropdown" href="#" role="button"
-                    data-bs-toggle="dropdown" aria-expanded="false">
+                   data-bs-toggle="dropdown" aria-expanded="false">
                     <span class="me-2 text-white fw-normal">@User.Identity.Name</span>
                     <i class="fas fa-user fa-fw"></i>
                 </a>
@@ -75,30 +52,15 @@
                 <div class="sb-sidenav-menu">
                     <div class="nav">
                         <div class="sb-sidenav-menu-heading">Home</div>
-                        <a class="nav-link" href="/">
-                            <div class="sb-nav-link-icon"><i class="fas fa-home"></i></div>
-                            Dashboard
-                        </a>
+                        <a class="nav-link" href="/"><div class="sb-nav-link-icon"><i class="fas fa-home"></i></div>Dashboard</a>
 
                         <div class="sb-sidenav-menu-heading">Transaction</div>
-                        <a class="nav-link" href="/Transaction/Index">
-                            <div class="sb-nav-link-icon"><i class="fas fa-exchange-alt"></i></div>
-                            Transactions
-                        </a>
-                        <a class="nav-link" href="/Budget/Index">
-                            <div class="sb-nav-link-icon"><i class="fas fa-wallet"></i></div>
-                            Budget
-                        </a>
+                        <a class="nav-link" href="/Transaction/Index"><div class="sb-nav-link-icon"><i class="fas fa-exchange-alt"></i></div>Transactions</a>
+                        <a class="nav-link" href="/Budget/Index"><div class="sb-nav-link-icon"><i class="fas fa-wallet"></i></div>Budget</a>
 
                         <div class="sb-sidenav-menu-heading">Configuration</div>
-                        <a class="nav-link" href="/Config/Categories">
-                            <div class="sb-nav-link-icon"><i class="fas fa-tags"></i></div>
-                            Categories
-                        </a>
-                        <a class="nav-link" href="/Config/Settings">
-                            <div class="sb-nav-link-icon"><i class="fas fa-cog"></i></div>
-                            Settings
-                        </a>
+                        <a class="nav-link" href="/Config/Categories"><div class="sb-nav-link-icon"><i class="fas fa-tags"></i></div>Categories</a>
+                        <a class="nav-link" href="/Config/Settings"><div class="sb-nav-link-icon"><i class="fas fa-cog"></i></div>Settings</a>
                     </div>
                 </div>
             </nav>
@@ -108,41 +70,57 @@
         <div id="layoutSidenav_content">
             <main>
                 <div class="container-fluid px-4">
-                    <!-- Page header -->
                     <div class="d-flex align-items-center justify-content-between mt-4 mb-3">
                         <h1 class="fs-2">Monthly Statement</h1>
                         <small class="text-muted"><i class="fas fa-calendar-alt me-2"></i>Generated: @DateTime.Now:dd MMM yyyy</small>
                     </div>
 
+                    <!-- Filter Form -->
+                    <form method="get" class="row g-2 mb-4 align-items-end">
+                        <div class="col-auto">
+                            <label class="form-label">Start Month</label>
+                            @Html.DropDownList("startMonth", new SelectList(ViewBag.MonthList, "Value", "Text", ViewBag.StartMonth), new { @class = "form-select" })
+                        </div>
+                        <div class="col-auto">
+                            <label class="form-label">Start Year</label>
+                            <input type="number" name="startYear" class="form-control" value="@ViewBag.StartYear" min="2000" max="2100" />
+                        </div>
+                        <div class="col-auto">
+                            <label class="form-label">End Month</label>
+                            @Html.DropDownList("endMonth", new SelectList(ViewBag.MonthList, "Value", "Text", ViewBag.EndMonth), new { @class = "form-select" })
+                        </div>
+                        <div class="col-auto">
+                            <label class="form-label">End Year</label>
+                            <input type="number" name="endYear" class="form-control" value="@ViewBag.EndYear" min="2000" max="2100" />
+                        </div>
+                        <div class="col-auto">
+                            <button class="btn btn-primary">Apply</button>
+                        </div>
+                    </form>
+
                     <!-- Summary Cards -->
                     <div class="row">
                         <div class="col-xl-4 col-md-6">
                             <div class="card bg-primary text-white mb-4 shadow-sm">
-                                <div class="card-body">
-                                  Balance: @Html.Raw(Model.Balance < 0 
-    ? $"<b>-</b>{Math.Abs(Model.Balance).ToString("N2")} EUR" 
-    : $"{Model.Balance.ToString("N2")} EUR")
-                                </div>
+                                <div class="card-body">Balance: @Html.Raw(Model.Balance < 0 ? $"<b>-</b>{Math.Abs(Model.Balance).ToString("N2")} EUR" : $"{Model.Balance.ToString("N2")} EUR")</div>
                                 <div class="card-footer d-flex align-items-center justify-content-between">
                                     <a class="small text-white stretched-link" href="/Budget/Index">View Details</a>
                                     <div class="small text-white"><i class="fas fa-angle-right"></i></div>
                                 </div>
                             </div>
                         </div>
-
                         <div class="col-xl-4 col-md-6">
                             <div class="card bg-success text-white mb-4 shadow-sm">
-                            <div class="card-body">Income: @Model.IncomeTotal.ToString("N2") EUR</div>
+                                <div class="card-body">Income: @Model.IncomeTotal.ToString("N2") EUR</div>
                                 <div class="card-footer d-flex align-items-center justify-content-between">
                                     <a class="small text-white stretched-link" href="/Transaction/Index">View Details</a>
                                     <div class="small text-white"><i class="fas fa-angle-right"></i></div>
                                 </div>
                             </div>
                         </div>
-
                         <div class="col-xl-4 col-md-6">
                             <div class="card bg-danger text-white mb-4 shadow-sm">
-<div class="card-body">Expenses: @Model.ExpenseTotal.ToString("N2") EUR</div>
+                                <div class="card-body">Expenses: @Model.ExpenseTotal.ToString("N2") EUR</div>
                                 <div class="card-footer d-flex align-items-center justify-content-between">
                                     <a class="small text-white stretched-link" href="/Transaction/Index">View Details</a>
                                     <div class="small text-white"><i class="fas fa-angle-right"></i></div>
@@ -176,19 +154,16 @@
                                     @foreach (var t in Model.RecentTransactions)
                                     {
                                         <tr>
-                                            <td>@t.Date.ToString("dd/MM/yyyy")</td>
+                                            <td>@t.Date:dd/MM/yyyy</td>
                                             <td>@t.Type</td>
                                             <td>@t.Category</td>
-                                          <td class="text-end fw-bold @(t.Type=="Income"?"text-success":"text-danger")">
-    @t.Amount.ToString("N2") EUR
-</td>
+                                            <td class="text-end fw-bold @(t.Type == "Income" ? "text-success" : "text-danger")">@t.Amount.ToString("N2") EUR</td>
                                         </tr>
                                     }
                                 </tbody>
                             </table>
                         </div>
                     </div>
-
                 </div>
             </main>
 
@@ -207,11 +182,8 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/simple-datatables@7.1.2/dist/umd/simple-datatables.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
     <script>
-        // Trend chart
         const ctx = document.getElementById('trendChart').getContext('2d');
-
         const gradientIncome = ctx.createLinearGradient(0, 0, 0, 250);
         gradientIncome.addColorStop(0, 'rgba(25,135,84,0.3)');
         gradientIncome.addColorStop(1, 'rgba(25,135,84,0)');
@@ -225,53 +197,20 @@
             data: {
                 labels: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.Months)),
                 datasets: [
-                    {
-                        label: 'Income',
-                        data: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.MonthlyIncome)),
-                        borderColor: '#198754',
-                        backgroundColor: gradientIncome,
-                        fill: true,
-                        tension: 0.4,
-                        pointRadius: 5,
-                        pointHoverRadius: 7
-                    },
-                    {
-                        label: 'Expense',
-                        data: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.MonthlyExpense)),
-                        borderColor: '#dc3545',
-                        backgroundColor: gradientExpense,
-                        fill: true,
-                        tension: 0.4,
-                        pointRadius: 5,
-                        pointHoverRadius: 7
-                    }
+                    { label: 'Income', data: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.MonthlyIncome)), borderColor: '#198754', backgroundColor: gradientIncome, fill: true, tension: 0.4, pointRadius: 5, pointHoverRadius: 7 },
+                    { label: 'Expense', data: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.MonthlyExpense)), borderColor: '#dc3545', backgroundColor: gradientExpense, fill: true, tension: 0.4, pointRadius: 5, pointHoverRadius: 7 }
                 ]
             },
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
-                plugins: {
-                    legend: { position: 'top' },
-                    tooltip: { mode: 'index', intersect: false }
-                },
+                plugins: { legend: { position: 'top' }, tooltip: { mode: 'index', intersect: false } },
                 interaction: { mode: 'nearest', axis: 'x', intersect: false },
-                scales: {
-                    x: { grid: { display: false } },
-                    y: {
-                        grid: { color: '#e9ecef' },
-                        beginAtZero: true,
-                        ticks: { stepSize: 50 }
-                    }
-                }
+                scales: { x: { grid: { display: false } }, y: { grid: { color: '#e9ecef' }, beginAtZero: true, ticks: { stepSize: 50 } } }
             }
         });
 
-        // Initialize DataTable
         const dataTable = new simpleDatatables.DataTable("#datatablesSimple");
-        document.querySelectorAll("#datatablesSimple tbody tr").forEach(row => {
-            const typeCell = row.querySelector("td:nth-child(2)");
-            if (typeCell) typeCell.style.color = typeCell.textContent.trim() === "Income" ? "green" : "red";
-        });
     </script>
 </body>
 </html>

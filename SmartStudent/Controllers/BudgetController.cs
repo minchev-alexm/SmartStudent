@@ -71,9 +71,14 @@ namespace SmartStudent.Controllers
         {
             var categories = _db.Categories.Select(c => c.Name).ToList();
             ViewBag.CategoryList = new SelectList(categories);
-            return View();
-        }
 
+            var model = new Budget
+            {
+                Actual = 0
+            };
+
+            return View(model);
+        }
         //POST for Add
         [HttpPost]
         [ValidateAntiForgeryToken]

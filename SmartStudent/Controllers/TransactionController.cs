@@ -169,14 +169,32 @@ namespace SmartStudent.Controllers
             }
 
             //Save to DB
+            using var dbTransaction = await db.Database.BeginTransactionAsync();
+
             try
             {
                 db.Transactions.Add(model);
                 await db.SaveChangesAsync();
-            }
 
-            catch (Exception ex)
+                if (model.Type == "Expense")
+                {
+                    var budget = await db.Budgets
+                        .FirstOrDefaultAsync(b =>
+                            b.UserId == userId &&
+                            b.Category == model.Category);
+
+                    if (budget != null)
+                    {
+                        budget.Actual += model.Amount;
+                        await db.SaveChangesAsync();
+                    }
+                }
+
+                await dbTransaction.CommitAsync();
+            }
+            catch
             {
+                await dbTransaction.RollbackAsync();
                 ModelState.AddModelError("", "Database save failed.");
                 var categories = db.Categories.Select(c => c.Name).ToList();
                 ViewBag.CategoryList = new SelectList(categories, model.Category);
@@ -209,6 +227,23 @@ namespace SmartStudent.Controllers
                     System.IO.File.Delete(filePath);
             }
 
+            // Adjust budget if expense
+            if (transaction.Type == "Expense")
+            {
+                var budget = await db.Budgets
+                    .FirstOrDefaultAsync(b =>
+                        b.UserId == userId &&
+                        b.Category == transaction.Category);
+
+                if (budget != null)
+                {
+                    budget.Actual -= transaction.Amount;
+
+                    if (budget.Actual < 0)
+                        budget.Actual = 0;
+                }
+            }
+
             db.Transactions.Remove(transaction);
             await db.SaveChangesAsync();
 
@@ -236,21 +271,63 @@ namespace SmartStudent.Controllers
         public async Task<IActionResult> EditTransaction(Transaction model)
         {
             if (!ModelState.IsValid)
+            {
+                var categories = db.Categories.Select(c => c.Name).ToList();
+                ViewBag.CategoryList = new SelectList(categories, model.Category);
                 return View(model);
+            }
 
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
             var transaction = await db.Transactions
                 .FirstOrDefaultAsync(t => t.Id == model.Id && t.UserId == userId);
 
             if (transaction == null)
                 return NotFound();
 
+            // 🔹 Store OLD values (needed for budget correction)
+            var oldType = transaction.Type;
+            var oldCategory = transaction.Category;
+            var oldAmount = transaction.Amount;
+
+            // 🔹 Reverse old expense effect
+            if (oldType == "Expense")
+            {
+                var oldBudget = await db.Budgets
+                    .FirstOrDefaultAsync(b =>
+                        b.UserId == userId &&
+                        b.Category == oldCategory);
+
+                if (oldBudget != null)
+                {
+                    oldBudget.Actual -= oldAmount;
+
+                    if (oldBudget.Actual < 0)
+                        oldBudget.Actual = 0;
+                }
+            }
+
+            // 🔹 Update transaction values
             transaction.Date = model.Date;
             transaction.Type = model.Type;
             transaction.Category = model.Category;
             transaction.Amount = model.Amount;
 
-            //File upload
+            // 🔹 Apply new expense effect
+            if (model.Type == "Expense")
+            {
+                var newBudget = await db.Budgets
+                    .FirstOrDefaultAsync(b =>
+                        b.UserId == userId &&
+                        b.Category == model.Category);
+
+                if (newBudget != null)
+                {
+                    newBudget.Actual += model.Amount;
+                }
+            }
+
+            // 🔹 Handle file upload replacement
             if (model.DocumentFile != null && model.DocumentFile.Length > 0)
             {
                 var uploadsFolder = Path.Combine(
@@ -260,7 +337,7 @@ namespace SmartStudent.Controllers
 
                 Directory.CreateDirectory(uploadsFolder);
 
-                //Replace file
+                // Delete old file if exists
                 if (!string.IsNullOrEmpty(transaction.DocumentPath))
                 {
                     var oldFilePath = Path.Combine(
@@ -281,8 +358,8 @@ namespace SmartStudent.Controllers
                 transaction.DocumentPath = $"/documents/{fileName}";
             }
 
-            //Save to DB
             await db.SaveChangesAsync();
+
             return RedirectToAction(nameof(Index));
         }
     }

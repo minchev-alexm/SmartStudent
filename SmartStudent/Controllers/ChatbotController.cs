@@ -29,7 +29,7 @@ namespace SmartStudent.Controllers
         private readonly ApplicationDbContext _db;
 
         private const bool AlwaysUseAI = false;
-        private const string ModelName = "qwen/qwen2.5-vl-7b";
+        private const string ModelName = "openai/gpt-oss-20b";
 
         public ChatbotController(IHttpClientFactory httpClientFactory, ApplicationDbContext db)
         {
@@ -205,13 +205,14 @@ User says: {request.UserMessage}
                 var json = await response.Content.ReadAsStringAsync();
 
                 using var doc = JsonDocument.Parse(json);
-                var output = doc.RootElement
-                                .GetProperty("output")[0]
-                                .GetProperty("content");
+                var outputs = doc.RootElement.GetProperty("output");
 
-                string aiMessage = output.ValueKind == JsonValueKind.Array
-                    ? string.Join(" ", output.EnumerateArray().Select(x => x.GetString()))
-                    : output.GetString();
+                string aiMessage = outputs
+                    .EnumerateArray()
+                    .FirstOrDefault(o => o.GetProperty("type").GetString() == "message")
+                    .GetProperty("content")
+                    .GetString();
+
 
                 return Ok(new { aiMessage = aiMessage?.Trim() });
             }

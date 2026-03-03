@@ -128,39 +128,56 @@ namespace SmartStudent.Controllers
         }
 
         //Statistics
-        public async Task<IActionResult> Statistics(int? month, int? year)
+        public async Task<IActionResult> Statistics(int? startMonth, int? startYear, int? endMonth, int? endYear)
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             var viewModel = new StatisticsViewModel();
 
-            // Transactions for selected month
-            var startDate = new DateTime(year ?? DateTime.Now.Year, month ?? DateTime.Now.Month, 1);
-            var endDate = startDate.AddMonths(1);
+            // Defaults
+            var now = DateTime.Now;
+            int sMonth = startMonth ?? now.Month;
+            int sYear = startYear ?? now.Year;
+            int eMonth = endMonth ?? now.Month;
+            int eYear = endYear ?? now.Year;
 
+            // Start/end dates
+            var startDate = new DateTime(sYear, sMonth, 1);
+            var endDate = new DateTime(eYear, eMonth, 1);
+
+            // Swap if start > end
+            if (startDate > endDate)
+            {
+                var temp = startDate;
+                startDate = endDate;
+                endDate = temp;
+
+                TempData["ErrorMessage"] = "Start date was after end date. Dates were swapped automatically.";
+            }
+
+            // Include the last month fully
+            endDate = endDate.AddMonths(1);
+
+            // Fetch transactions
             var transactions = await db.Transactions
                 .Where(t => t.UserId == userId && t.Date >= startDate && t.Date < endDate)
                 .OrderByDescending(t => t.Date)
                 .ToListAsync();
 
             viewModel.RecentTransactions = transactions.Take(10).ToList();
+            viewModel.IncomeTotal = transactions.Where(t => t.Type == "Income").Sum(t => t.Amount);
+            viewModel.ExpenseTotal = transactions.Where(t => t.Type == "Expense").Sum(t => t.Amount);
 
-            viewModel.IncomeTotal = transactions
-                .Where(t => t.Type == "Income")
-                .Sum(t => t.Amount);
-
-            viewModel.ExpenseTotal = transactions
-                .Where(t => t.Type == "Expense")
-                .Sum(t => t.Amount);
+            // Safe month difference
+            int monthDiff = ((endDate.Year - startDate.Year) * 12) + endDate.Month - startDate.Month;
+            monthDiff = Math.Max(monthDiff, 1);
 
             // Monthly trend
-            var last6Months = Enumerable.Range(0, 6)
-                .Select(i => startDate.AddMonths(-i))
-                .OrderBy(d => d)
-                .ToList();
+            var trendMonths = Enumerable.Range(0, monthDiff)
+                                        .Select(i => startDate.AddMonths(i))
+                                        .ToList();
 
-            viewModel.Months = last6Months.Select(d => d.ToString("MMM yyyy")).ToList();
-
-            foreach (var d in last6Months)
+            viewModel.Months = trendMonths.Select(d => d.ToString("MMM yyyy")).ToList();
+            foreach (var d in trendMonths)
             {
                 viewModel.MonthlyIncome.Add(transactions
                     .Where(t => t.Type == "Income" && t.Date.Month == d.Month && t.Date.Year == d.Year)
@@ -171,15 +188,18 @@ namespace SmartStudent.Controllers
                     .Sum(t => t.Amount));
             }
 
-            // Category breakdown
-            var categories = await db.Transactions
-                .Where(t => t.UserId == userId && t.Type == "Expense")
-                .GroupBy(t => t.Category)
-                .Select(g => new { Category = g.Key, Total = g.Sum(x => x.Amount) })
-                .ToListAsync();
+            // Month dropdown
+            ViewBag.MonthList = Enumerable.Range(1, 12)
+                .Select(m => new SelectListItem
+                {
+                    Value = m.ToString(),
+                    Text = System.Globalization.CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(m)
+                }).ToList();
 
-            viewModel.ExpenseCategories = categories.Select(c => c.Category ?? "").ToList();
-            viewModel.ExpenseCategoryTotals = categories.Select(c => c.Total).ToList();
+            ViewBag.StartMonth = sMonth;
+            ViewBag.StartYear = sYear;
+            ViewBag.EndMonth = eMonth;
+            ViewBag.EndYear = eYear;
 
             return View(viewModel);
         }
